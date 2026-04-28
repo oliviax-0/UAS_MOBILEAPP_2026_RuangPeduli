@@ -1,0 +1,14 @@
+# Environment variables - JANGAN DI-COMMIT!
+.env
+.env.*
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Django
