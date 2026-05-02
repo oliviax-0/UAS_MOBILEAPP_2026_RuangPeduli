@@ -4,9 +4,6 @@ import 'package:ruangpeduliapp/auth/login_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_widgets.dart';
 import 'package:ruangpeduliapp/auth/forgot_password_screen.dart';
 
-// ─────────────────────────────────────────────────────────────
-// Helper: build LoginScreen inside a testable MaterialApp
-// ─────────────────────────────────────────────────────────────
 Widget buildLoginScreen({String role = 'Masyarakat'}) {
   return MaterialApp(
     home: LoginScreen(role: role),
@@ -14,9 +11,7 @@ Widget buildLoginScreen({String role = 'Masyarakat'}) {
 }
 
 void main() {
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 1: AuthBackground
-  // ═══════════════════════════════════════════════════════════
+
   group('AuthBackground Widget', () {
     testWidgets(
       'TC-LG-01: AuthBackground is rendered on LoginScreen',
@@ -29,9 +24,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 2: AuthBackButton
-  // ═══════════════════════════════════════════════════════════
   group('AuthBackButton Widget', () {
     testWidgets(
       'TC-LG-02: AuthBackButton is visible on LoginScreen',
@@ -46,7 +38,6 @@ void main() {
     testWidgets(
       'TC-LG-03: Tapping AuthBackButton pops the screen',
       (WidgetTester tester) async {
-        // Push LoginScreen on top of another screen so pop works
         await tester.pumpWidget(
           MaterialApp(
             home: Builder(
@@ -66,22 +57,17 @@ void main() {
         await tester.tap(find.text('Go to Login'));
         await tester.pumpAndSettle();
 
-        // Verify LoginScreen is shown
         expect(find.byType(LoginScreen), findsOneWidget);
 
-        // Tap back button
         await tester.tap(find.byType(AuthBackButton));
         await tester.pumpAndSettle();
 
-        // LoginScreen should be popped
         expect(find.byType(LoginScreen), findsNothing);
       },
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 3: UnderlineField (Email)
-  // ═══════════════════════════════════════════════════════════
+
   group('UnderlineField Email Widget', () {
     testWidgets(
       'TC-LG-04: Email UnderlineField is visible',
@@ -114,7 +100,6 @@ void main() {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
 
-        // Scroll to DarkButton first (may be off-screen in test viewport)
         await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(DarkButton));
@@ -130,14 +115,12 @@ void main() {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
 
-        // Trigger error
         await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(DarkButton));
         await tester.pump();
         expect(find.text('Email wajib diisi'), findsOneWidget);
 
-        // Type in email field
         await tester.enterText(
             find.widgetWithText(TextField, 'Masukan Email'), 'a');
         await tester.pump();
@@ -146,10 +129,6 @@ void main() {
       },
     );
   });
-
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 4: UnderlineField (Sandi) with toggle show/hide
-  // ═══════════════════════════════════════════════════════════
   group('UnderlineField Sandi Widget', () {
     testWidgets(
       'TC-LG-08: Sandi UnderlineField is visible',
@@ -167,8 +146,6 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
-
-        // Find the password TextField
         final passwordField = tester.widget<TextField>(
           find.widgetWithText(TextField, 'Masukan Sandi'),
         );
@@ -181,18 +158,14 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
-
-        // Initially obscured
         final passwordFieldBefore = tester.widget<TextField>(
           find.widgetWithText(TextField, 'Masukan Sandi'),
         );
         expect(passwordFieldBefore.obscureText, isTrue);
 
-        // Tap the visibility icon
         await tester.tap(find.byIcon(Icons.visibility_off_outlined));
         await tester.pump();
 
-        // Should now be visible
         final passwordFieldAfter = tester.widget<TextField>(
           find.widgetWithText(TextField, 'Masukan Sandi'),
         );
@@ -206,7 +179,6 @@ void main() {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
 
-        // Fill email but leave password empty
         await tester.enterText(
             find.widgetWithText(TextField, 'Masukan Email'), 'test@email.com');
         await tester.ensureVisible(find.byType(DarkButton));
@@ -331,9 +303,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 6: InlineMessage (General Error)
-  // ═══════════════════════════════════════════════════════════
   group('InlineMessage Widget', () {
     testWidgets(
       'TC-LG-18: InlineMessage is not visible initially',
@@ -341,7 +310,6 @@ void main() {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
 
-        // InlineMessage with null/empty message renders SizedBox.shrink
         final inlineMessages = tester.widgetList<InlineMessage>(
           find.byType(InlineMessage),
         );
@@ -357,13 +325,11 @@ void main() {
         await tester.pumpWidget(buildLoginScreen());
         await tester.pumpAndSettle();
 
-        // First tap with empty fields
         await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(DarkButton));
         await tester.pump();
 
-        // Fill both fields and tap again
         await tester.enterText(
             find.widgetWithText(TextField, 'Masukan Email'), 'test@email.com');
         await tester.enterText(
@@ -373,16 +339,12 @@ void main() {
         await tester.tap(find.byType(DarkButton));
         await tester.pump();
 
-        // General error should be cleared (set to null in _onLogin)
         expect(find.text('Email wajib diisi'), findsNothing);
         expect(find.text('Sandi wajib diisi'), findsNothing);
       },
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 7: GestureDetector (Google Login)
-  // ═══════════════════════════════════════════════════════════
   group('GestureDetector Google Login Widget', () {
     testWidgets(
       'TC-LG-20: "Log In dengan Google" text is visible',
@@ -411,9 +373,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 8: "Lupa Sandi?" Navigation
-  // ═══════════════════════════════════════════════════════════
   group('Lupa Sandi Navigation', () {
     testWidgets(
       'TC-LG-22: "Lupa Sandi?" text is visible',
@@ -439,9 +398,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 9: Role display
-  // ═══════════════════════════════════════════════════════════
   group('Role Display', () {
     testWidgets(
       'TC-LG-24: Role "Masyarakat" is displayed correctly',
