@@ -204,4 +204,15 @@ void main() {
       },
     );
   });
-}
+    group('AuthBackground - ForgotPasswordScreen.build()', () {
+      testWidgets(
+        'TC-FP-12: AuthBackground is rendered on ForgotPasswordScreen',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(buildForgotPasswordScreen());
+          await tester.pumpAndSettle();
+  
+          expect(find.byType(AuthBackground), findsOneWidget);
+        },
+      );
+    });
+  }
