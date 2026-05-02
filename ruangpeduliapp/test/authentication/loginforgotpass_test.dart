@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/auth/forgot_password_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_widgets.dart';
 
-
 Widget buildForgotPasswordScreen({String role = 'Masyarakat'}) {
   return MaterialApp(
     home: ForgotPasswordScreen(role: role),
@@ -11,7 +10,6 @@ Widget buildForgotPasswordScreen({String role = 'Masyarakat'}) {
 }
 
 void main() {
-
   group('UnderlineField Email - ForgotPasswordScreen._onSubmit()', () {
     testWidgets(
       'TC-FP-01: Email UnderlineField is visible',
@@ -90,6 +88,76 @@ void main() {
         await tester.pump();
 
         expect(find.text('Email wajib diisi'), findsNothing);
+      },
+    );
+  });
+
+  group('DarkButton Kirim - ForgotPasswordScreen._onSubmit()', () {
+    testWidgets(
+      'TC-FP-06: DarkButton "Kirim" is visible on screen',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DarkButton), findsOneWidget);
+        expect(find.text('Kirim'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'TC-FP-07: Tapping "Kirim" with empty email shows error and does NOT navigate',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.byType(DarkButton));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(DarkButton));
+        await tester.pump();
+
+        expect(find.text('Email wajib diisi'), findsOneWidget);
+        expect(find.byType(ForgotPasswordScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'TC-FP-08: DarkButton label changes to "Memproses..." when loading',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+      
+        await tester.enterText(
+            find.widgetWithText(TextField, 'Masukan Email'), 'test@email.com');
+        await tester.ensureVisible(find.byType(DarkButton));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(DarkButton));
+
+        await tester.pump();
+
+        expect(find.text('Memproses...'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'TC-FP-09: DarkButton is not tappable again while loading',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+            find.widgetWithText(TextField, 'Masukan Email'), 'test@email.com');
+        await tester.ensureVisible(find.byType(DarkButton));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(DarkButton));
+        await tester.pump();
+
+        expect(find.text('Memproses...'), findsOneWidget);
+        await tester.tap(find.byType(DarkButton));
+        await tester.pump();
+
+        expect(find.text('Memproses...'), findsOneWidget);
       },
     );
   });
