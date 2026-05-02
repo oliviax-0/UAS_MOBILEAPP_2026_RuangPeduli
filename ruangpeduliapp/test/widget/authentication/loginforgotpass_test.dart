@@ -126,7 +126,6 @@ void main() {
         await tester.pumpWidget(buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
-      
         await tester.enterText(
             find.widgetWithText(TextField, 'Masukan Email'), 'test@email.com');
         await tester.ensureVisible(find.byType(DarkButton));
@@ -158,6 +157,50 @@ void main() {
         await tester.pump();
 
         expect(find.text('Memproses...'), findsOneWidget);
+      },
+    );
+  });
+
+  group('AuthBackButton - ForgotPasswordScreen.build()', () {
+    testWidgets(
+      'TC-FP-10: AuthBackButton is visible on ForgotPasswordScreen',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AuthBackButton), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'TC-FP-11: Tapping AuthBackButton pops ForgotPasswordScreen',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const ForgotPasswordScreen(role: 'Masyarakat'),
+                  ),
+                ),
+                child: const Text('Go to Forgot Password'),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Go to Forgot Password'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ForgotPasswordScreen), findsOneWidget);
+
+        await tester.tap(find.byType(AuthBackButton));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ForgotPasswordScreen), findsNothing);
       },
     );
   });
