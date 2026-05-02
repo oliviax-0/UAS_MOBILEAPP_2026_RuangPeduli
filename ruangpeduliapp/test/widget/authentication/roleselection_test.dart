@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/auth/role_selection_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_options_screen.dart';
+import '../shared/test_helpers.dart';
 
 void main() {
-  Widget buildTestApp() {
-    return const MaterialApp(
-      home: RoleSelectionScreen(),
-    );
-  }
-
   group('RoleSelectionScreen - _onSelect()', () {
     testWidgets(
       'TC-RS-01: Tapping "Panti Sosial" navigates to AuthOptionsScreen with role "Panti Sosial"',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
-        await tester.pumpAndSettle(); 
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
+        await tester.pumpAndSettle();
 
         expect(find.text('Panti Sosial'), findsOneWidget);
 
@@ -29,7 +24,7 @@ void main() {
     testWidgets(
       'TC-RS-02: Tapping "Masyarakat" navigates to AuthOptionsScreen with role "Masyarakat"',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         expect(find.text('Masyarakat'), findsOneWidget);
@@ -43,7 +38,7 @@ void main() {
     testWidgets(
       'TC-RS-03: AuthOptionsScreen receives correct role "Panti Sosial"',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Panti Sosial'));
@@ -59,7 +54,7 @@ void main() {
     testWidgets(
       'TC-RS-04: AuthOptionsScreen receives correct role "Masyarakat"',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Masyarakat'));
@@ -75,7 +70,7 @@ void main() {
     testWidgets(
       'TC-RS-05: Both "Panti Sosial" and "Masyarakat" buttons are visible',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         expect(find.text('Panti Sosial'), findsOneWidget);
@@ -85,7 +80,7 @@ void main() {
     testWidgets(
       'TC-RS-06: RoleSelectionScreen role buttons are no longer visible after navigation',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Panti Sosial'));
@@ -97,7 +92,7 @@ void main() {
     testWidgets(
       'TC-RS-07: Back button on AuthOptionsScreen returns to RoleSelectionScreen',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(AuthScreenBuilder.buildRoleSelectionScreen());
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Masyarakat'));

@@ -2,19 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/auth/forgot_password_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_widgets.dart';
-
-Widget buildForgotPasswordScreen({String role = 'Masyarakat'}) {
-  return MaterialApp(
-    home: ForgotPasswordScreen(role: role),
-  );
-}
+import '../shared/test_helpers.dart';
 
 void main() {
   group('UnderlineField Email - ForgotPasswordScreen._onSubmit()', () {
     testWidgets(
       'TC-FP-01: Email UnderlineField is visible',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         expect(find.text('Email'), findsOneWidget);
@@ -25,7 +20,7 @@ void main() {
     testWidgets(
       'TC-FP-02: Email field accepts text input',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         await tester.enterText(
@@ -39,7 +34,7 @@ void main() {
     testWidgets(
       'TC-FP-03: Email error "Email wajib diisi" shown when email is empty on submit',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         // Leave email empty, scroll to button and tap
@@ -55,7 +50,7 @@ void main() {
     testWidgets(
       'TC-FP-04: Email error clears when user starts typing',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         // Trigger error first
@@ -77,7 +72,7 @@ void main() {
     testWidgets(
       'TC-FP-05: No email error shown when email is filled',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         await tester.enterText(
@@ -96,7 +91,7 @@ void main() {
     testWidgets(
       'TC-FP-06: DarkButton "Kirim" is visible on screen',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         expect(find.byType(DarkButton), findsOneWidget);
@@ -107,7 +102,7 @@ void main() {
     testWidgets(
       'TC-FP-07: Tapping "Kirim" with empty email shows error and does NOT navigate',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         await tester.ensureVisible(find.byType(DarkButton));
@@ -123,7 +118,7 @@ void main() {
     testWidgets(
       'TC-FP-08: DarkButton label changes to "Memproses..." when loading',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         await tester.enterText(
@@ -141,7 +136,7 @@ void main() {
     testWidgets(
       'TC-FP-09: DarkButton is not tappable again while loading',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         await tester.enterText(
@@ -165,7 +160,7 @@ void main() {
     testWidgets(
       'TC-FP-10: AuthBackButton is visible on ForgotPasswordScreen',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildForgotPasswordScreen());
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
         await tester.pumpAndSettle();
 
         expect(find.byType(AuthBackButton), findsOneWidget);
@@ -176,21 +171,7 @@ void main() {
       'TC-FP-11: Tapping AuthBackButton pops ForgotPasswordScreen',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        const ForgotPasswordScreen(role: 'Masyarakat'),
-                  ),
-                ),
-                child: const Text('Go to Forgot Password'),
-              ),
-            ),
-          ),
-        );
+            AuthScreenBuilder.buildForgotPasswordScreenWithNavigation());
 
         await tester.tap(find.text('Go to Forgot Password'));
         await tester.pumpAndSettle();
@@ -204,15 +185,15 @@ void main() {
       },
     );
   });
-    group('AuthBackground - ForgotPasswordScreen.build()', () {
-      testWidgets(
-        'TC-FP-12: AuthBackground is rendered on ForgotPasswordScreen',
-        (WidgetTester tester) async {
-          await tester.pumpWidget(buildForgotPasswordScreen());
-          await tester.pumpAndSettle();
-  
-          expect(find.byType(AuthBackground), findsOneWidget);
-        },
-      );
-    });
-  }
+  group('AuthBackground - ForgotPasswordScreen.build()', () {
+    testWidgets(
+      'TC-FP-12: AuthBackground is rendered on ForgotPasswordScreen',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(AuthScreenBuilder.buildForgotPasswordScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AuthBackground), findsOneWidget);
+      },
+    );
+  });
+}
