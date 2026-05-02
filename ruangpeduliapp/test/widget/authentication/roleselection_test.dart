@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/auth/role_selection_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_options_screen.dart';
-import '../shared/test_helpers.dart';
+import '../shared/screen_builders.dart';
 
 void main() {
   group('RoleSelectionScreen - _onSelect()', () {
