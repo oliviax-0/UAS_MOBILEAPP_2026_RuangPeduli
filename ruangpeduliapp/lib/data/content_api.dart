@@ -182,6 +182,10 @@ class KebutuhanApi {
 // ─── CONTENT API ──────────────────────────────────────────────────────────────
 
 class ContentApi {
+  final http.Client _client;
+
+  ContentApi({http.Client? client}) : _client = client ?? http.Client();
+
   String get _base => AppConfig.baseUrl;
 
   /// Fetch published beritas. Pass [pantiId] to filter by panti,
@@ -193,7 +197,7 @@ class ContentApi {
     final uri = Uri.parse('$_base/content/berita/').replace(queryParameters: params.isEmpty ? null : params);
 
     try {
-      final res = await http.get(uri).timeout(
+      final res = await _client.get(uri).timeout(
         const Duration(seconds: 15),
         onTimeout: () => throw Exception('Koneksi timeout'),
       );
@@ -214,7 +218,7 @@ class ContentApi {
     final uri = Uri.parse('$_base/content/video/').replace(queryParameters: params.isEmpty ? null : params);
 
     try {
-      final res = await http.get(uri).timeout(
+      final res = await _client.get(uri).timeout(
         const Duration(seconds: 15),
         onTimeout: () => throw Exception('Koneksi timeout'),
       );
@@ -235,7 +239,7 @@ class ContentApi {
       queryParameters: {'user_id': userId.toString()},
     );
     try {
-      final res = await http.get(uri).timeout(const Duration(seconds: 10));
+      final res = await _client.get(uri).timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) return jsonDecode(res.body) as Map<String, dynamic>;
       return {};
     } on SocketException {
@@ -250,7 +254,7 @@ class ContentApi {
     final uri = Uri.parse('$_base/content/berita/$beritaId/vote/');
 
     try {
-      final res = await http
+      final res = await _client
           .post(
             uri,
             headers: {'Content-Type': 'application/json'},
@@ -309,7 +313,7 @@ class ContentApi {
   Future<void> deleteBerita(int beritaId, int userId) async {
     final uri = Uri.parse('$_base/content/berita/$beritaId/');
     try {
-      final res = await http.delete(
+      final res = await _client.delete(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'user_id': userId}),
