@@ -7,6 +7,79 @@ import 'package:ruangpeduliapp/data/content_api.dart';
 
 const Color kPink = Color(0xFFF28C9F);
 
+class ThumbnailPicker extends StatelessWidget {
+  final File? imageFile;
+  final String imagePath;
+  final VoidCallback onPick;
+  final VoidCallback? onRemove;
+
+  const ThumbnailPicker({
+    super.key,
+    this.imageFile,
+    this.imagePath = '',
+    required this.onPick,
+    this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedImage = imageFile ?? (imagePath.isNotEmpty ? File(imagePath) : null);
+
+    if (selectedImage != null) {
+      return Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.file(selectedImage, fit: BoxFit.cover, width: double.infinity),
+            ),
+          ),
+          if (onRemove != null)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(4),
+                  child: const Icon(Icons.close, color: Colors.white, size: 18),
+                ),
+              ),
+            ),
+        ],
+      );
+    }
+
+    return GestureDetector(
+      onTap: onPick,
+      child: Container(
+        width: double.infinity,
+        height: 180,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8E8E8),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_photo_alternate_outlined, size: 48, color: Color(0xFF888888)),
+            SizedBox(height: 8),
+            Text(
+              'Tambah Thumbnail',
+              style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 class BeritaBaruPanti extends StatefulWidget {
@@ -224,56 +297,10 @@ class _BeritaBaruPantiState extends State<BeritaBaruPanti> {
   // ─── Thumbnail picker ─────────────────────────────────────────────────────
 
   Widget _buildThumbnailPicker() {
-    if (_thumbnail != null) {
-      return Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Image.file(_thumbnail!, fit: BoxFit.cover, width: double.infinity),
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: _removeThumbnail,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(4),
-                child: const Icon(Icons.close, color: Colors.white, size: 18),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: double.infinity,
-        height: 180,
-        decoration: BoxDecoration(
-          color: const Color(0xFFE8E8E8),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.add_photo_alternate_outlined, size: 48, color: Color(0xFF888888)),
-            SizedBox(height: 8),
-            Text(
-              'Tambah Thumbnail',
-              style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
-            ),
-          ],
-        ),
-      ),
+    return ThumbnailPicker(
+      imageFile: _thumbnail,
+      onPick: _pickImage,
+      onRemove: _removeThumbnail,
     );
   }
 
