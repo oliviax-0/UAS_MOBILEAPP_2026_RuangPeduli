@@ -23,9 +23,7 @@ void main() {
       await tester.enterText(textFields.at(2), 'password123');
       await tester.pump();
 
-      final passwordField = tester.widget<TextFormField>(textFields.at(2));
-
-      expect(passwordField.obscureText, true);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
     }
 
     // Submit dengan form belum lengkap hanya memunculkan validasi lokal.
