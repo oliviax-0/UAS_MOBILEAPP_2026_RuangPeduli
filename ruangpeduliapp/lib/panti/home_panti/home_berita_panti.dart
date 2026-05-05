@@ -471,3 +471,29 @@ class _VoteButton extends StatelessWidget {
     );
   }
 }
+
+class AuthorVoting extends StatelessWidget {
+  final String authorName;
+  final VoidCallback onProfileTap;
+
+  const AuthorVoting({
+    super.key,
+    required this.authorName,
+    required this.onProfileTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onProfileTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.account_circle),
+          const SizedBox(width: 8),
+          Text(authorName),
+        ],
+      ),
+    );
+  }
+}
