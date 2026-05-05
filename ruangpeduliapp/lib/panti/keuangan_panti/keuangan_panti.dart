@@ -508,6 +508,43 @@ class _TransactionTile extends StatelessWidget {
 
 // ─── Tambah Pemasukan Dialog ──────────────────────────────────────────────────
 
+class TrxTile extends StatelessWidget {
+  final int id;
+  final String kategori;
+  final double nominal;
+  final String tanggal;
+  final String tipe;
+  final VoidCallback onDelete;
+
+  const TrxTile({
+    super.key,
+    required this.id,
+    required this.kategori,
+    required this.nominal,
+    required this.tanggal,
+    required this.tipe,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onDelete,
+      child: _TransactionTile(
+        item: TransactionModel(
+          id: id,
+          category: kategori,
+          subLabel: tanggal,
+          jumlah: nominal,
+          isIncome: tipe == 'pemasukan',
+          tanggal: tanggal,
+          createdAt: tanggal,
+        ),
+      ),
+    );
+  }
+}
+
 class _TambahPemasukanDialog extends StatefulWidget {
   final int userId;
   final VoidCallback onSaved;
