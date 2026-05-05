@@ -36,14 +36,21 @@ void main() {
     if (textFields.evaluate().isNotEmpty) {
       await tester.enterText(textFields.first, 'Test Input');
       await tester.pump();
+
+      expect(find.text('Test Input'), findsOneWidget);
     }
 
     // Cari tombol simpan (fallback fleksibel)
     final saveButton = find.textContaining('Simpan');
 
     if (saveButton.evaluate().isNotEmpty) {
+      await tester.enterText(textFields.first, '');
+      await tester.pump();
+
       await tester.tap(saveButton);
       await tester.pumpAndSettle();
+
+      expect(find.text('Mohon isi semua kolom yang diperlukan'), findsOneWidget);
     }
 
     // Minimal halaman tetap tidak crash
