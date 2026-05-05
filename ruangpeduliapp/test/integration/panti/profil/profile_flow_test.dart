@@ -19,30 +19,27 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: Column(
-            children: [
-              const Expanded(child: ProfilePanti()),
+          appBar: AppBar(
+            actions: [
               Builder(
-                builder: (context) {
-                  return ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditProfilePanti(
-                            pantiId: 1,
-                            userId: 1,
-                            initialProfile: mockProfile,
-                          ),
+                builder: (context) => TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => EditProfilePanti(
+                          pantiId: 1,
+                          userId: 1,
+                          initialProfile: mockProfile,
                         ),
-                      );
-                    },
-                    child: const Text('Buka Edit Profil'),
-                  );
-                },
+                      ),
+                    );
+                  },
+                  child: const Text('Buka Edit Profil'),
+                ),
               ),
             ],
           ),
+          body: const ProfilePanti(),
         ),
       ),
     );
