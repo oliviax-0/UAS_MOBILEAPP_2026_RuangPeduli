@@ -40,6 +40,78 @@ const Color kPinkDark = Color(0xFFE5728A);
 const Color kCardBg = Colors.white;
 const double kRadius = 20.0;
 
+class BottomNav extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const BottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  static const _icons = [
+    Icons.home_rounded,
+    Icons.account_balance_wallet_outlined,
+    Icons.inventory_2_outlined,
+    Icons.person_outline_rounded,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: kPink,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x30F28C9F),
+            blurRadius: 20,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(_icons.length, (index) {
+              final selected = index == currentIndex;
+              return GestureDetector(
+                onTap: () => onTap(index),
+                behavior: HitTestBehavior.opaque,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Icon(
+                        _icons[index],
+                        color: selected ? Colors.black : Colors.white.withValues(alpha: 0.65),
+                        size: 26,
+                      ),
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: 3,
+                      width: selected ? 24 : 0,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
@@ -408,62 +480,9 @@ class _HomePantiState extends State<HomePanti> {
   // ─── Bottom Navigation Bar ───────────────────────────────────────────────
 
   Widget _buildBottomNav() {
-    const icons = [
-      Icons.home_rounded,
-      Icons.account_balance_wallet_outlined,
-      Icons.inventory_2_outlined,
-      Icons.person_outline_rounded,
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        color: kPink,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x30F28C9F),
-            blurRadius: 20,
-            offset: Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(icons.length, (index) {
-              final selected = index == _selectedIndex;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedIndex = index),
-                behavior: HitTestBehavior.opaque,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Icon(
-                        icons[index],
-                        color: selected ? Colors.black : Colors.white.withValues(alpha: 0.65),
-                        size: 26,
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      height: 3,
-                      width: selected ? 24 : 0,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
+    return BottomNav(
+      currentIndex: _selectedIndex,
+      onTap: (index) => setState(() => _selectedIndex = index),
     );
   }
 }
