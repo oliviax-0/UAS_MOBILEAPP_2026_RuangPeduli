@@ -211,4 +211,28 @@ class AuthScreenBuilder {
       ),
     );
   }
+
+  static Widget buildOtpScreen({String email = 'test@example.com'}) {
+    return MaterialApp(
+      home: ResetPasswordOtpScreen(email: email, role: 'Masyarakat'),
+    );
+  }
+
+  static Widget buildOtpScreenWithNavigation(
+      {String email = 'test@example.com'}) {
+    return MaterialApp(
+      home: Builder(
+        builder: (context) => ElevatedButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ResetPasswordOtpScreen(email: email, role: 'Masyarakat'),
+            ),
+          ),
+          child: const Text('Go to OTP'),
+        ),
+      ),
+    );
+  }
 }
