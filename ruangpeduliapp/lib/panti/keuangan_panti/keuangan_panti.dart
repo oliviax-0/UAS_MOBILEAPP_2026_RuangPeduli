@@ -13,6 +13,58 @@ const Color kSalmon = Color(0xFFF2C4BC);
 const Color kGreen = Color(0xFF2DB34A);
 const Color kRed = Color(0xFFE53935);
 
+class DashCard extends StatelessWidget {
+  final String title;
+  final double amount;
+  final bool isVisible;
+  final VoidCallback onToggle;
+
+  const DashCard({
+    super.key,
+    required this.title,
+    required this.amount,
+    required this.isVisible,
+    required this.onToggle,
+  });
+
+  String get _formattedAmount {
+    final formatted = amount.toInt().toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]}.',
+        );
+    return 'Rp $formatted';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: kSalmon,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(title),
+              const SizedBox(height: 4),
+              Text(isVisible ? _formattedAmount : 'Rp ********'),
+            ],
+          ),
+          IconButton(
+            onPressed: onToggle,
+            icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 class KeuanganPanti extends StatefulWidget {
