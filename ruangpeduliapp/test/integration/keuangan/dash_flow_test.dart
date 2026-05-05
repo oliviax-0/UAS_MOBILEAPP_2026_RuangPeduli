@@ -13,12 +13,10 @@ void main() {
       ),
     );
 
-    // Halaman tampil
     expect(find.byType(KeuanganPanti), findsOneWidget);
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
-    // Kondisi: loading / dashboard card
     final loading = find.byType(CircularProgressIndicator);
     final dashboard = find.text('Dasbor');
 
@@ -35,7 +33,7 @@ void main() {
       await tester.pump();
     }
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byType(KeuanganPanti), findsWidgets);
   });
