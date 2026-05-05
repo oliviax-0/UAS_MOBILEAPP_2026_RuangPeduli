@@ -14,7 +14,7 @@ void main() {
     );
 
     expect(find.byType(KeuanganPanti), findsOneWidget);
-    expect(find.byType(Scaffold), findsOneWidget);
+    expect(find.byType(Stack), findsOneWidget);
 
     // kondisi kemungkinan: loading / empty / list transaksi
     final loading = find.byType(CircularProgressIndicator);
