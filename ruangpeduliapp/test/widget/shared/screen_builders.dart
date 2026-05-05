@@ -235,4 +235,34 @@ class AuthScreenBuilder {
       ),
     );
   }
+
+  static Widget buildGoogleSignInScreen() {
+    return MaterialApp(
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Center(
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text('Masuk dengan Google'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget buildGoogleSignUpScreen() {
+    return MaterialApp(
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Center(
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text('Daftar dengan Google'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
