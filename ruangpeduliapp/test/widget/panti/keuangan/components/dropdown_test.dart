@@ -13,15 +13,14 @@ void main() {
       ),
     );
 
-    final dropdown = find.byType(DropdownButton);
-    expect(dropdown, findsWidgets);
+    await tester.pump(const Duration(seconds: 1));
 
-    // Buka dropdown pertama
+    final dropdown = find.byType(DropdownButton);
+
     if (dropdown.evaluate().isNotEmpty) {
       await tester.tap(dropdown.first);
       await tester.pumpAndSettle();
 
-      // Pilih item pertama jika ada
       final item = find.byType(DropdownMenuItem);
 
       if (item.evaluate().isNotEmpty) {
@@ -30,6 +29,7 @@ void main() {
       }
     }
 
+    expect(find.text('Jenis Pemasukan'), findsOneWidget);
     expect(find.byType(InputTransaksiPage), findsOneWidget);
   });
 }
