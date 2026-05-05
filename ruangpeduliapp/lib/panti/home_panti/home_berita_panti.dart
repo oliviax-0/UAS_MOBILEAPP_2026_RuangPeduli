@@ -8,6 +8,34 @@ import 'package:ruangpeduliapp/masyarakat/home/panti_detail_screen.dart';
 const Color kPink = Color(0xFFF28C9F);
 const Color kSalmon = Color(0xFFEBB9B1);
 
+class VoteButton extends StatelessWidget {
+  final bool isUpvote;
+  final int count;
+  final VoidCallback onTap;
+
+  const VoteButton({
+    super.key,
+    required this.isUpvote,
+    required this.count,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(isUpvote ? Icons.thumb_up : Icons.thumb_down),
+          const SizedBox(width: 4),
+          Text('$count'),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 class BeritaDetailPanti extends StatefulWidget {
@@ -443,4 +471,3 @@ class _VoteButton extends StatelessWidget {
     );
   }
 }
-
