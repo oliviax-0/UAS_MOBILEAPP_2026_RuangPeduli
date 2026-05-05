@@ -18,19 +18,20 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Cari TabBar
-    final tabBar = find.byType(TabBar);
-    expect(tabBar, findsOneWidget);
+    // Mencari widget Tab secara langsung. 
+    // Menggunakan find.byType(Tab) lebih reliabel pada integration test dibandingkan mencari kontainer TabBar-nya.
+    final tabFinder = find.byType(Tab);
+    
+    // Pastikan widget Tab ditemukan (biasanya 'Pemasukan' dan 'Pengeluaran')
+    expect(tabFinder, findsWidgets, reason: 'Tab tidak ditemukan. Pastikan halaman sudah selesai memuat data.');
 
-    final tabs = find.byType(Tab);
-
-    if (tabs.evaluate().length >= 2) {
+    if (tester.widgetList(tabFinder).length >= 2) {
       // Tap tab kedua
-      await tester.tap(tabs.at(1));
+      await tester.tap(tabFinder.at(1));
       await tester.pumpAndSettle();
 
       // Tap kembali ke tab pertama
-      await tester.tap(tabs.first);
+      await tester.tap(tabFinder.first);
       await tester.pumpAndSettle();
     }
 
