@@ -8,8 +8,6 @@ import 'package:ruangpeduliapp/auth/reset_password_otp_screen.dart';
 import 'package:ruangpeduliapp/auth/verification_screen.dart';
 
 class AuthScreenBuilder {
-
-
   static Widget buildLoginScreen({String role = 'Masyarakat'}) {
     return MaterialApp(
       home: LoginScreen(role: role),
@@ -196,6 +194,20 @@ class AuthScreenBuilder {
           ),
           child: const Text('Go to Verification'),
         ),
+      ),
+    );
+  }
+
+  static Widget buildResetPasswordScreen({
+    String? email,
+    String otp = '12345',
+    String role = 'Masyarakat',
+  }) {
+    return MaterialApp(
+      home: ResetPasswordNewScreen(
+        email: email ?? '',
+        otp: otp,
+        role: role,
       ),
     );
   }
