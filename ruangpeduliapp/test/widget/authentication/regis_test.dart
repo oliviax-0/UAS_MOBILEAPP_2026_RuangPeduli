@@ -1,4 +1,5 @@
-
+// test/widget/authentication/register_test.dart
+//
 // Widget test for SignUpScreen — only tests logic specific to SignUpScreen.
 // Shared widget behavior (DarkButton, AuthBackButton, UnderlineField, AuthBackground)
 // is already covered in:
@@ -11,24 +12,7 @@ import 'package:ruangpeduliapp/auth/signup_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_widgets.dart';
 import '../shared/screen_builders.dart';
 
-// ─────────────────────────────────────────────────────────────
-// Mock navigator observer — intercepts navigation without
-// actually rendering the destination screen
-// ─────────────────────────────────────────────────────────────
-class _MockNavigatorObserver extends NavigatorObserver {
-  int didPushCount = 0;
-
-  @override
-  void didPush(Route route, Route? previousRoute) {
-    didPushCount++;
-    // Do NOT call super — intercepts navigation
-  }
-}
-
 void main() {
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 1: Back navigation — SignUpScreen specific
-  // ═══════════════════════════════════════════════════════════
   group('Back Navigation - SignUpScreen.build()', () {
     testWidgets(
       'TC-RG-01: Tapping AuthBackButton pops SignUpScreen',
@@ -50,10 +34,6 @@ void main() {
       },
     );
   });
-
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 2: Role display — SignUpScreen specific
-  // ═══════════════════════════════════════════════════════════
   group('Role Display - SignUpScreen.build()', () {
     testWidgets(
       'TC-RG-02: Role "Masyarakat" is displayed correctly',
@@ -80,9 +60,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 3: Email validation — SignUpScreen._onSignUp() specific
-  // ═══════════════════════════════════════════════════════════
   group('Email Validation - SignUpScreen._onSignUp()', () {
     testWidgets(
       'TC-RG-04: Email error "Email wajib diisi" shown when empty on submit',
@@ -99,10 +76,6 @@ void main() {
       },
     );
   });
-
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 4: Password validation — SignUpScreen._validatePassword() specific
-  // ═══════════════════════════════════════════════════════════
   group('Password Validation - SignUpScreen._validatePassword()', () {
     testWidgets(
       'TC-RG-05: Sandi error shown when empty on submit',
@@ -187,9 +160,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 5: Confirm password validation — SignUpScreen._onSignUp() specific
-  // ═══════════════════════════════════════════════════════════
   group('Confirm Password Validation - SignUpScreen._onSignUp()', () {
     testWidgets(
       'TC-RG-09: Konfirmasi Sandi error shown when empty on submit',
@@ -236,9 +206,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 6: Combined form validation — SignUpScreen._onSignUp() specific
-  // ═══════════════════════════════════════════════════════════
   group('Combined Form Validation - SignUpScreen._onSignUp()', () {
     testWidgets(
       'TC-RG-11: All 3 errors shown when all fields empty on submit',
@@ -260,14 +227,18 @@ void main() {
     testWidgets(
       'TC-RG-12: No validation errors shown when all fields are valid',
       (WidgetTester tester) async {
-        // Use MockNavigatorObserver to intercept navigation
-        // without rendering FillDataMasyarakatScreen
-        final mockObserver = _MockNavigatorObserver();
+        // Use onSignUpSuccess callback to intercept navigation
+        // without rendering FillDataMasyarakatScreen (avoids pending timer error)
+        bool signUpCalled = false;
 
         await tester.pumpWidget(
           MaterialApp(
-            navigatorObservers: [mockObserver],
-            home: const SignUpScreen(role: 'Masyarakat'),
+            home: SignUpScreen(
+              role: 'Masyarakat',
+              onSignUpSuccess: () {
+                signUpCalled = true;
+              },
+            ),
           ),
         );
         await tester.pumpAndSettle();
@@ -283,23 +254,18 @@ void main() {
         await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(DarkButton));
-        await tester.pump();
+        await tester.pumpAndSettle();
 
-        // No validation errors — all fields are valid
         expect(find.text('Email wajib diisi'), findsNothing);
         expect(find.text('Sandi wajib diisi'), findsNothing);
         expect(find.text('Konfirmasi sandi wajib diisi'), findsNothing);
         expect(find.text('Sandi tidak cocok'), findsNothing);
 
-        // Navigation was triggered — validation passed
-        expect(mockObserver.didPushCount, greaterThan(0));
+        expect(signUpCalled, true);
       },
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 7: Google Sign Up — SignUpScreen._onGoogleSignUp() specific
-  // ═══════════════════════════════════════════════════════════
   group('Google Sign Up - SignUpScreen._onGoogleSignUp()', () {
     testWidgets(
       'TC-RG-13: "Daftar dengan Google" text is visible',
@@ -322,6 +288,23 @@ void main() {
           find.text('Akun Google ini sudah terdaftar, silahkan login'),
           findsNothing,
         );
+      },
+    );
+  });
+
+  group('Full Valid Registration - SignUpScreen._onSignUp()', () {
+    testWidgets(
+      'TC-RG-18: Google Sign Up button is clickable and visible',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(AuthScreenBuilder.buildSignUpScreen());
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.text('Daftar dengan Google'));
+        expect(find.text('Daftar dengan Google'), findsOneWidget);
+
+        // Verify button is tappable
+        await tester.tap(find.text('Daftar dengan Google'));
+        await tester.pumpAndSettle();
       },
     );
   });

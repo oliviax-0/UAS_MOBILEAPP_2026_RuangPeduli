@@ -8,7 +8,8 @@ import 'package:ruangpeduliapp/auth/fill_data_panti_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   final String role;
-  const SignUpScreen({super.key, required this.role});
+  final VoidCallback? onSignUpSuccess;
+  const SignUpScreen({super.key, required this.role, this.onSignUpSuccess});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -70,7 +71,10 @@ class _SignUpScreenState extends State<SignUpScreen>
 
   Future<void> _onGoogleSignUp() async {
     final backendRole = widget.role == 'Panti Sosial' ? 'panti' : 'masyarakat';
-    setState(() { _googleLoading = true; _googleError = null; });
+    setState(() {
+      _googleLoading = true;
+      _googleError = null;
+    });
     try {
       final idToken = await GoogleSignInService.signIn();
       if (idToken == null) return; // user cancelled
@@ -80,7 +84,8 @@ class _SignUpScreenState extends State<SignUpScreen>
       if (!mounted) return;
 
       if (result['exists'] == true) {
-        setState(() => _googleError = 'Akun Google ini sudah terdaftar, silahkan login');
+        setState(() =>
+            _googleError = 'Akun Google ini sudah terdaftar, silahkan login');
         return;
       }
 
@@ -113,8 +118,12 @@ class _SignUpScreenState extends State<SignUpScreen>
   String? _validatePassword(String password) {
     if (password.isEmpty) return 'Sandi wajib diisi';
     if (password.length < 6) return 'Sandi minimal 6 karakter';
-    if (!RegExp(r'[A-Z]').hasMatch(password)) return 'Sandi harus mengandung minimal 1 huruf kapital';
-    if (!RegExp(r'\d').hasMatch(password)) return 'Sandi harus mengandung minimal 1 angka';
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Sandi harus mengandung minimal 1 huruf kapital';
+    }
+    if (!RegExp(r'\d').hasMatch(password)) {
+      return 'Sandi harus mengandung minimal 1 angka';
+    }
     return null;
   }
 
@@ -123,7 +132,8 @@ class _SignUpScreenState extends State<SignUpScreen>
     final passErr = _validatePassword(_passwordController.text);
     final confirmErr = _confirmPasswordController.text.isEmpty
         ? 'Konfirmasi sandi wajib diisi'
-        : passErr == null && _confirmPasswordController.text != _passwordController.text
+        : passErr == null &&
+                _confirmPasswordController.text != _passwordController.text
             ? 'Sandi tidak cocok'
             : null;
 
@@ -134,6 +144,10 @@ class _SignUpScreenState extends State<SignUpScreen>
     });
 
     if (emailErr != null || passErr != null || confirmErr != null) return;
+    if (widget.onSignUpSuccess != null) {
+      widget.onSignUpSuccess!();
+      return;
+    }
 
     if (widget.role == 'Panti Sosial') {
       Navigator.of(context).push(PageRouteBuilder(
@@ -200,7 +214,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                             hint: 'Masukan Email',
                             controller: _emailController,
                             errorText: _emailError,
-                            onChanged: (_) => setState(() => _emailError = null),
+                            onChanged: (_) =>
+                                setState(() => _emailError = null),
                           ),
                           const SizedBox(height: 24),
                           UnderlineField(
@@ -209,7 +224,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                             obscure: true,
                             controller: _passwordController,
                             errorText: _passwordError,
-                            onChanged: (_) => setState(() => _passwordError = null),
+                            onChanged: (_) =>
+                                setState(() => _passwordError = null),
                           ),
                           const SizedBox(height: 24),
                           UnderlineField(
@@ -218,7 +234,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                             obscure: true,
                             controller: _confirmPasswordController,
                             errorText: _confirmPasswordError,
-                            onChanged: (_) => setState(() => _confirmPasswordError = null),
+                            onChanged: (_) =>
+                                setState(() => _confirmPasswordError = null),
                           ),
                           const SizedBox(height: 40),
                           Center(
@@ -249,10 +266,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  _googleLoading ? 'Memproses...' : 'Daftar dengan Google',
+                                  _googleLoading
+                                      ? 'Memproses...'
+                                      : 'Daftar dengan Google',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: _googleLoading ? Colors.grey : const Color(0xFF1A1A1A),
+                                    color: _googleLoading
+                                        ? Colors.grey
+                                        : const Color(0xFF1A1A1A),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
