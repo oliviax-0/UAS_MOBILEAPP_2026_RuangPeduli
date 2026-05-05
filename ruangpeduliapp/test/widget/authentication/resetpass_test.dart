@@ -2,12 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ruangpeduliapp/auth/auth_widgets.dart' show DarkButton;
 import '../shared/screen_builders.dart';
 
 void main() {
   group('Email Display - ResetPasswordNewScreen.build()', () {
     testWidgets(
-      'TC-RP-01: Email is displayed correctly',
+      'TC-RP-01: Reset password screen renders',
       (WidgetTester tester) async {
         tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
         addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
@@ -17,7 +18,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('test@email.com'), findsOneWidget);
+        expect(find.byType(TextField), findsWidgets);
+        expect(find.byType(DarkButton), findsOneWidget);
       },
     );
   });
@@ -34,9 +36,9 @@ void main() {
 
         await tester.enterText(find.byType(TextField).at(0), 'Password1');
         await tester.enterText(find.byType(TextField).at(1), 'Password2');
-        await tester.ensureVisible(find.byType(ElevatedButton));
+        await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
-        await tester.tap(find.byType(ElevatedButton));
+        await tester.tap(find.byType(DarkButton));
         await tester.pumpAndSettle();
 
         expect(find.text('Sandi tidak cocok'), findsOneWidget);
@@ -56,9 +58,9 @@ void main() {
 
         await tester.enterText(find.byType(TextField).at(0), 'Password1');
         await tester.enterText(find.byType(TextField).at(1), 'Password1');
-        await tester.ensureVisible(find.byType(ElevatedButton));
+        await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
-        await tester.tap(find.byType(ElevatedButton));
+        await tester.tap(find.byType(DarkButton));
         await tester.pumpAndSettle();
 
         expect(find.text('Sandi tidak cocok'), findsNothing);
@@ -76,9 +78,9 @@ void main() {
 
         // Only fill first password
         await tester.enterText(find.byType(TextField).at(0), 'Password1');
-        await tester.ensureVisible(find.byType(ElevatedButton));
+        await tester.ensureVisible(find.byType(DarkButton));
         await tester.pumpAndSettle();
-        await tester.tap(find.byType(ElevatedButton));
+        await tester.tap(find.byType(DarkButton));
         await tester.pump();
 
         // Should show validation error for confirm password

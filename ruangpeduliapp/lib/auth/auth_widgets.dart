@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: use_key_in_widget_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
 
@@ -72,7 +72,9 @@ class _CustomPopupState extends State<_CustomPopup>
   @override
   Widget build(BuildContext context) {
     final color = widget.isError ? const Color(0xFFF43D5E) : Colors.green;
-    final icon = widget.isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded;
+    final icon = widget.isError
+        ? Icons.error_outline_rounded
+        : Icons.check_circle_outline_rounded;
 
     return Positioned(
       top: MediaQuery.of(context).padding.top + 16,
@@ -140,7 +142,9 @@ class InlineMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (message == null || message!.isEmpty) return const SizedBox.shrink();
     final color = isError ? const Color(0xFFF43D5E) : Colors.green.shade600;
-    final icon = isError ? Icons.info_outline_rounded : Icons.check_circle_outline_rounded;
+    final icon = isError
+        ? Icons.info_outline_rounded
+        : Icons.check_circle_outline_rounded;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
@@ -211,8 +215,8 @@ class _AuthWavePainter extends CustomPainter {
       ..moveTo(0, size.height * 0.18)
       ..quadraticBezierTo(size.width * 0.20, size.height * 0.02,
           size.width * 0.50, size.height * 0.12)
-      ..quadraticBezierTo(size.width * 0.80, size.height * 0.22,
-          size.width, size.height * 0.08)
+      ..quadraticBezierTo(
+          size.width * 0.80, size.height * 0.22, size.width, size.height * 0.08)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
@@ -227,8 +231,8 @@ class _AuthWavePainter extends CustomPainter {
       ..moveTo(0, size.height * 0.28)
       ..quadraticBezierTo(size.width * 0.22, size.height * 0.10,
           size.width * 0.50, size.height * 0.20)
-      ..quadraticBezierTo(size.width * 0.78, size.height * 0.30,
-          size.width, size.height * 0.16)
+      ..quadraticBezierTo(
+          size.width * 0.78, size.height * 0.30, size.width, size.height * 0.16)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
@@ -310,8 +314,8 @@ class AuthBackButton extends StatelessWidget {
           color: Colors.black,
           shape: BoxShape.circle,
         ),
-        child: const Icon(Icons.arrow_back_rounded,
-            color: Colors.white, size: 20),
+        child:
+            const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
       ),
     );
   }
@@ -365,10 +369,14 @@ class _UnderlineFieldState extends State<UnderlineField> {
             hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
             enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                    color: hasError ? const Color(0xFFF43D5E) : Colors.grey.shade300)),
+                    color: hasError
+                        ? const Color(0xFFF43D5E)
+                        : Colors.grey.shade300)),
             focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                    color: hasError ? const Color(0xFFF43D5E) : const Color(0xFFF43D5E),
+                    color: hasError
+                        ? const Color(0xFFF43D5E)
+                        : const Color(0xFFF43D5E),
                     width: 1.5)),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -376,7 +384,9 @@ class _UnderlineFieldState extends State<UnderlineField> {
                 ? GestureDetector(
                     onTap: () => setState(() => _hidden = !_hidden),
                     child: Icon(
-                      _hidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      _hidden
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       size: 20,
                       color: Colors.grey.shade400,
                     ),
@@ -391,16 +401,67 @@ class _UnderlineFieldState extends State<UnderlineField> {
               const Icon(Icons.info_outline_rounded,
                   size: 13, color: Color(0xFFF43D5E)),
               const SizedBox(width: 4),
-              Text(
-                widget.errorText!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFFF43D5E),
+              Expanded(
+                child: Text(
+                  widget.errorText!,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFFF43D5E),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
         ],
+      ],
+    );
+  }
+}
+
+// ── Row with two expanded children ──
+class RowWithTwoExpandedChildren extends StatelessWidget {
+  final Widget child1;
+  final Widget child2;
+
+  const RowWithTwoExpandedChildren({
+    required this.child1,
+    required this.child2,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: child1,
+        ),
+        Expanded(
+          flex: 1,
+          child: child2,
+        ),
+      ],
+    );
+  }
+}
+
+// ── Row with one expanded child ──
+class RowWithOneExpandedChild extends StatelessWidget {
+  final Widget child;
+
+  const RowWithOneExpandedChild({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text('Your text here'),
+          ),
+        ),
       ],
     );
   }
