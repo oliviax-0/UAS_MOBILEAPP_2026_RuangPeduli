@@ -120,3 +120,11 @@ void main() {
     );
   });
 }
+
+void testOtpValidation(Widget screen, String screenName) {
+  group('$screenName OTP Tests', () {
+    testWidgets('Empty OTP validation', (WidgetTester tester) async {
+      // ... shared test code
+    });
+  });
+}
