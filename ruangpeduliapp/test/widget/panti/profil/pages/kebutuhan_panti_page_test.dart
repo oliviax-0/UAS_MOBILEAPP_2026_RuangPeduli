@@ -6,11 +6,9 @@ void main() {
   testWidgets('KebutuhanPantiPage render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: KebutuhanPantiPage(
-            pantiId: 1,
-            userId: 1,
-          ),
+        home: KebutuhanPantiPage(
+          pantiId: 1,
+          userId: 1,
         ),
       ),
     );
