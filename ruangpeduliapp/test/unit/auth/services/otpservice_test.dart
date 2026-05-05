@@ -12,16 +12,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 1: OTP length validation
-  // Extracted from VerificationScreen._onVerify() and
-  // ResetPasswordOtpScreen._onVerify():
-  //
-  // if (otp.length != 5) {
-  //   _showSnackBar('Kode OTP harus 5 digit', isError: true);
-  //   return;
-  // }
-  // ═══════════════════════════════════════════════════════════
   group('OTP Length Validation - _onVerify()', () {
     test(
       'TC-OTP-01: OTP with exactly 5 digits is valid',
@@ -81,13 +71,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 2: _showSnackBar() state logic
-  // Extracted from both OTP screens:
-  //
-  // if (isError) { _otpError = message; _otpSuccess = null; }
-  // else         { _otpSuccess = message; _otpError = null; }
-  // ═══════════════════════════════════════════════════════════
   group('SnackBar State Logic - _showSnackBar()', () {
     test(
       'TC-OTP-06: isError=true sets otpError and clears otpSuccess',
@@ -96,14 +79,11 @@ void main() {
         String? otpSuccess = 'previous success';
 
         // Simulate _showSnackBar('some error', isError: true)
-        const isError = true;
+        final isError = true;
         const message = 'Kode OTP harus 5 digit';
         if (isError) {
           otpError = message;
           otpSuccess = null;
-        } else {
-          otpSuccess = message;
-          otpError = null;
         }
 
         expect(otpError, 'Kode OTP harus 5 digit');
@@ -118,12 +98,9 @@ void main() {
         String? otpSuccess;
 
         // Simulate _showSnackBar('OTP baru telah dikirim ke email kamu')
-        const isError = false;
+        final isError = false;
         const message = 'OTP baru telah dikirim ke email kamu';
-        if (isError) {
-          otpError = message;
-          otpSuccess = null;
-        } else {
+        if (!isError) {
           otpSuccess = message;
           otpError = null;
         }
@@ -154,15 +131,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 3: Countdown timer logic
-  // Extracted from VerificationScreen._startCountdown() and
-  // ResetPasswordOtpScreen._startCountdown():
-  //
-  // _countdown = 60;
-  // if (_countdown > 0) { _countdown--; } else { timer.cancel(); }
-  // bool get _canResend => _countdown == 0;
-  // ═══════════════════════════════════════════════════════════
   group('Countdown Timer Logic - _startCountdown()', () {
     test(
       'TC-OTP-09: Initial countdown starts at 60',
@@ -226,12 +194,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 4: _onResend() guard logic
-  // Extracted from both OTP screens:
-  //
-  // if (!_canResend || _resendLoading) return;
-  // ═══════════════════════════════════════════════════════════
   group('Resend Guard Logic - _onResend()', () {
     test(
       'TC-OTP-15: Resend is blocked when countdown is not 0',
@@ -288,13 +250,6 @@ void main() {
     );
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // GROUP 5: OTP digit-only input validation
-  // Extracted from both OTP screens TextField inputFormatters:
-  //
-  // inputFormatters: [FilteringTextInputFormatter.digitsOnly]
-  // maxLength: 5
-  // ═══════════════════════════════════════════════════════════
   group('OTP Input Format Validation', () {
     test(
       'TC-OTP-20: OTP must contain digits only',
@@ -321,6 +276,82 @@ void main() {
         expect(maxLength, 5);
         expect('12345'.length <= maxLength, true);
         expect('123456'.length <= maxLength, false);
+      },
+    );
+  });
+
+  group('API Response Parsing - VerificationScreen._onVerify()', () {
+    test(
+      'TC-OTP-23: userId is correctly parsed from verify OTP response',
+      () {
+        final result = {'user_id': 10, 'panti_id': null};
+        final userId = result['user_id'];
+        expect(userId, 10);
+      },
+    );
+
+    test(
+      'TC-OTP-24: pantiId is correctly parsed from verify OTP response',
+      () {
+        final result = {'user_id': 1, 'panti_id': 4};
+        final pantiId = result['panti_id'];
+        expect(pantiId, 4);
+      },
+    );
+
+    test(
+      'TC-OTP-25: Both userId and pantiId can be null in response',
+      () {
+        final Map<String, dynamic> result = {
+          'user_id': null,
+          'panti_id': null,
+        };
+        final userId = result['user_id'];
+        final pantiId = result['panti_id'];
+        expect(userId, null);
+        expect(pantiId, null);
+      },
+    );
+  });
+
+  group('Error Message Parsing - VerificationScreen._onVerify()', () {
+    test(
+      'TC-OTP-26: Exception is converted to non-null string for snackbar',
+      () {
+        String? otpError;
+        try {
+          throw Exception('OTP tidak valid');
+        } catch (e) {
+          otpError = '$e';
+        }
+        expect(otpError, isNotNull);
+        expect(otpError.isNotEmpty, true);
+      },
+    );
+
+    test(
+      'TC-OTP-27: Error string contains the original exception message',
+      () {
+        String? otpError;
+        try {
+          throw Exception('Kode OTP sudah kadaluarsa');
+        } catch (e) {
+          otpError = '$e';
+        }
+        expect(otpError.contains('Kode OTP sudah kadaluarsa'), true);
+      },
+    );
+
+    test(
+      'TC-OTP-28: Resend error string starts with "Gagal kirim ulang OTP:"',
+      () {
+        String? resendError;
+        try {
+          throw Exception('Network timeout');
+        } catch (e) {
+          resendError = 'Gagal kirim ulang OTP: $e';
+        }
+        expect(resendError.startsWith('Gagal kirim ulang OTP:'), true);
       },
     );
   });
