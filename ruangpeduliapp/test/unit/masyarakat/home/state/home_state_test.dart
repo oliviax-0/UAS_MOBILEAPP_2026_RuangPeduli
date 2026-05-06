@@ -662,7 +662,7 @@ void main() {
   // ════════════════════════════════════════════════════════════════════
   // GROUP 9 – BeritaDetail: _onLihatProfil state
   // ════════════════════════════════════════════════════════════════════
-  group('BeritaDetailScreen – loadingProfile state', () {
+  group('BeritaDetailScreen loadingProfile state', () {
     test('pantiId null → tidak memulai loading', () {
       bool loadingTriggered = false;
       final pantiId = null;
@@ -678,6 +678,7 @@ void main() {
     test('pantiId valid → loading dimulai', () {
       bool loading = false;
       const pantiId = 10;
+      // ignore: unnecessary_null_comparison
       if (pantiId != null) {
         loading = true; // setState(() => _loadingProfile = true)
       }
