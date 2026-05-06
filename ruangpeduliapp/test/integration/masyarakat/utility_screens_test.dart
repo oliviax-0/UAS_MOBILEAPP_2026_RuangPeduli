@@ -12,9 +12,6 @@ import 'package:ruangpeduliapp/masyarakat/transaksi/lokasi_screen.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // ─────────────────────────────────────────────
-  //  NotificationScreen
-  // ─────────────────────────────────────────────
   group('NotificationScreen', () {
     Widget buildScreen({int? userId}) => MaterialApp(
           home: NotificationScreen(userId: userId),

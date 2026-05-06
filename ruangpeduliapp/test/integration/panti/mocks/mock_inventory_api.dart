@@ -1,7 +1,7 @@
 // test/mocks/mock_inventory_api.dart
 
-import 'package:ruangpeduliapp/panti/inventory_panti/models/item_model.dart';
-import 'package:ruangpeduliapp/panti/inventory_panti/models/anggota_model.dart';
+import 'package:ruangpeduliapp/panti/inventaris/models/item_model.dart';
+import 'package:ruangpeduliapp/panti/inventaris/models/anggota_model.dart';
 
 class MockInventoryApi {
 
