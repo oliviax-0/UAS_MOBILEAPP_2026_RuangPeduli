@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -5,7 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import 'package:ruangpeduliapp/masyarakat/profile/edit_profil_screen.dart';
 
-import 'edit_profil_screen_test.mocks.dart';
+import 'edit_profile_screen_test.mocks.dart';
 
 @GenerateMocks([ProfileApi])
 void main() {
@@ -21,11 +23,17 @@ void main() {
     profilePicture: null,
   );
 
-  Widget buildWidget({SocietyProfileModel? profile, int? userId = 1}) {
+  Widget buildWidget({
+    SocietyProfileModel? profile,
+    int? userId = 1,
+    ProfileApi? profileApi,
+  }) {
+    final userProfile = profile ?? dummyProfile;
     return MaterialApp(
       home: EditProfilScreen(
-        profile: profile ?? dummyProfile,
+        profile: userProfile,
         userId: userId,
+        profileApi: profileApi,
       ),
     );
   }
@@ -142,6 +150,7 @@ void main() {
       await tester.pump();
 
       final field = find.widgetWithText(TextField, 'Budi Santoso');
+      await tester.ensureVisible(field);
       await tester.tap(field);
       await tester.enterText(field, 'Andi Wijaya');
       await tester.pump();
@@ -177,6 +186,7 @@ void main() {
       await tester.pump();
 
       final field = find.widgetWithText(TextField, 'budi_s');
+      await tester.ensureVisible(field);
       await tester.tap(field);
       await tester.enterText(field, 'andi_w');
       await tester.pump();
@@ -212,6 +222,7 @@ void main() {
       await tester.pump();
 
       final field = find.widgetWithText(TextField, '081234567890');
+      await tester.ensureVisible(field);
       await tester.tap(field);
       await tester.enterText(field, '089999999999');
       await tester.pump();
@@ -247,6 +258,7 @@ void main() {
       await tester.pump();
 
       final field = find.widgetWithText(TextField, 'Laki-laki');
+      await tester.ensureVisible(field);
       await tester.tap(field);
       await tester.enterText(field, 'Perempuan');
       await tester.pump();
@@ -283,7 +295,14 @@ void main() {
       await tester.pump();
 
       expect(find.text('budi@email.com'), findsOneWidget);
-      expect(find.byIcon(Icons.lock_outline_rounded), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Icon &&
+              widget.icon == Icons.lock_outline_rounded &&
+              widget.size == 16,
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Tap "Ganti email" membuka _ChangeEmailDialog',
@@ -291,7 +310,9 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti email'));
+      final button = find.text('Ganti email');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
       expect(find.text('Ganti Email'), findsOneWidget);
@@ -303,7 +324,9 @@ void main() {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
 
-      await tester.tap(find.text('Ganti email'));
+      final button = find.text('Ganti email');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pump();
 
       expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
@@ -329,7 +352,9 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
       expect(find.byType(Dialog), findsOneWidget);
@@ -340,7 +365,9 @@ void main() {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pump();
 
       expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
@@ -403,7 +430,9 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
       expect(find.text('Kata sandi saat ini'), findsOneWidget);
@@ -414,7 +443,9 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
       expect(find.text('Kata sandi baru'), findsOneWidget);
@@ -425,14 +456,15 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
-      // Tombol ElevatedButton dengan label 'Simpan'
       expect(
         find.descendant(
-          of: find.byType(ElevatedButton),
-          matching: find.text('Simpan'),
+          of: find.byType(Dialog),
+          matching: find.widgetWithText(ElevatedButton, 'Simpan'),
         ),
         findsOneWidget,
       );
@@ -443,10 +475,14 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
+      final button = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Lupa kata sandi?'));
+      final forgotButton = find.text('Lupa kata sandi?');
+      await tester.ensureVisible(forgotButton);
+      await tester.tap(forgotButton);
       await tester.pumpAndSettle();
 
       expect(find.text('Kirim Kode OTP'), findsOneWidget);
@@ -480,11 +516,12 @@ void main() {
       await tester.pumpWidget(buildWidget(profile: null));
       await tester.pump();
 
-      await tester.tap(find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.text('Simpan'),
-      ));
-      await tester.pump();
+      final saveButton = find.widgetWithText(ElevatedButton, 'Simpan');
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
 
       expect(find.text('Profil tidak ditemukan'), findsOneWidget);
     });
@@ -492,16 +529,22 @@ void main() {
     testWidgets('Tombol "Simpan" menampilkan CircularProgressIndicator saat _saving',
         (WidgetTester tester) async {
       final mockProfileApi = MockProfileApi();
+      final saveCompleter = Completer<SocietyProfileModel>();
       when(mockProfileApi.updateMasyarakatProfile(any))
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 10), () => dummyProfile));
+          .thenAnswer((_) => saveCompleter.future);
 
-      await tester.pumpWidget(buildWidget());
+      await tester.pumpWidget(buildWidget(profileApi: mockProfileApi));
       await tester.pump();
 
-      await tester.tap(find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.text('Simpan'),
-      ));
+      final saveButton = find.widgetWithText(ElevatedButton, 'Simpan');
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        saveButton,
+        100,
+        scrollable: find.byType(SingleChildScrollView),
+      );
+      await tester.tap(saveButton);
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -518,11 +561,16 @@ void main() {
       await tester.pumpWidget(buildWidget(profile: null));
       await tester.pump();
 
-      await tester.tap(find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.text('Simpan'),
-      ));
-      await tester.pump();
+      final saveButton = find.widgetWithText(ElevatedButton, 'Simpan');
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        saveButton,
+        100,
+        scrollable: find.byType(SingleChildScrollView),
+      );
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Profil tidak ditemukan'), findsOneWidget);
@@ -533,8 +581,11 @@ void main() {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
 
-      await tester.tap(find.text('Ganti email'));
-      await tester.pump();
+      final changeEmailButton = find.text('Ganti email');
+      await tester.ensureVisible(changeEmailButton);
+      await tester.pumpAndSettle();
+      await tester.tap(changeEmailButton);
+      await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
@@ -545,8 +596,16 @@ void main() {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
 
-      await tester.tap(find.text('Ganti Kata Sandi'));
-      await tester.pump();
+      final changePasswordButton = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      await tester.ensureVisible(changePasswordButton);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        changePasswordButton,
+        100,
+        scrollable: find.byType(SingleChildScrollView),
+      );
+      await tester.tap(changePasswordButton);
+      await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
