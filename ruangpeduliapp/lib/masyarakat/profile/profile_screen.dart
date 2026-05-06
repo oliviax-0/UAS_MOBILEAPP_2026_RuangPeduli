@@ -12,7 +12,21 @@ import 'package:ruangpeduliapp/masyarakat/history/riwayat_donasi_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int? userId;
-  const ProfileScreen({super.key, this.userId});
+  final ProfileApi? profileApi;
+  final DonationApi? donationApi;
+  final WidgetBuilder? homeScreenBuilder;
+  final WidgetBuilder? searchScreenBuilder;
+  final WidgetBuilder? historyScreenBuilder;
+
+  const ProfileScreen({
+    super.key,
+    this.userId,
+    this.profileApi,
+    this.donationApi,
+    this.homeScreenBuilder,
+    this.searchScreenBuilder,
+    this.historyScreenBuilder,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -36,13 +50,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserProfile() async {
-    final profile = await ProfileApi().fetchMasyarakatProfile(widget.userId!);
+    final profileApi = widget.profileApi ?? ProfileApi();
+    final profile = await profileApi.fetchMasyarakatProfile(widget.userId!);
     if (mounted) setState(() => _userProfile = profile);
   }
 
   Future<void> _loadTotalDonasi() async {
     try {
-      final list = await DonationApi().fetchDonations(widget.userId!);
+      final donationApi = widget.donationApi ?? DonationApi();
+      final list = await donationApi.fetchDonations(widget.userId!);
       final total = list.fold<int>(0, (sum, d) => sum + d.jumlah);
       if (mounted) setState(() => _totalDonasi = total);
     } catch (_) {}
@@ -61,7 +77,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadPanti() async {
     try {
-      final list = await ProfileApi().fetchAllPanti();
+      final profileApi = widget.profileApi ?? ProfileApi();
+      final list = await profileApi.fetchAllPanti();
       if (mounted) setState(() { _pantiList = list; _isLoading = false; });
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
@@ -103,15 +120,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (index == _selectedIndex) return;
     if (index == 0) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomeMasyarakatScreen(userId: widget.userId)),
+        MaterialPageRoute(
+          builder: widget.homeScreenBuilder ??
+              (_) => HomeMasyarakatScreen(userId: widget.userId),
+        ),
       );
     } else if (index == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => SearchScreen(userId: widget.userId)),
+        MaterialPageRoute(
+          builder: widget.searchScreenBuilder ??
+              (_) => SearchScreen(userId: widget.userId),
+        ),
       );
     } else if (index == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => RiwayatDonasiScreen(userId: widget.userId)),
+        MaterialPageRoute(
+          builder: widget.historyScreenBuilder ??
+              (_) => RiwayatDonasiScreen(userId: widget.userId),
+        ),
       );
     }
     setState(() => _selectedIndex = index);

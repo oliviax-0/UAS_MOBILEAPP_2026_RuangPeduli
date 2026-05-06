@@ -7,7 +7,6 @@ import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/donation_api.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import 'package:ruangpeduliapp/masyarakat/transaksi/konfirmasi_metode_screen.dart';
-
 import 'konfirmasi_metode_screen_test.mocks.dart';
 
 @GenerateMocks([DonationApi, ProfileApi])
