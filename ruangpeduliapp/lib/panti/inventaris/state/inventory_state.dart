@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:ruangpeduliapp/panti/inventaris/models/item_model.dart';
 
 class InventoryState extends ChangeNotifier {
   final dynamic api;
@@ -6,6 +7,7 @@ class InventoryState extends ChangeNotifier {
   int stokMasuk = 0;
   int stokKeluar = 0;
   int notifCount = 0;
+  List<ItemModel> items = [];
   String? error;
   bool isLoading = false;
 
@@ -29,6 +31,36 @@ class InventoryState extends ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Load items from API
+  Future<void> loadItems() async {
+    try {
+      isLoading = true;
+      error = null;
+      notifyListeners();
+
+      items = await api.getItems();
+      error = null;
+    } catch (e) {
+      error = e.toString();
+      items = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Delete item by ID
+  Future<bool> deleteItem(int id) async {
+    try {
+      final result = await api.deleteItem(id);
+      error = null;
+      return result;
+    } catch (e) {
+      error = e.toString();
+      return false;
     }
   }
 }
