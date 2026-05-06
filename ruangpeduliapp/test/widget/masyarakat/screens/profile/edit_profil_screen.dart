@@ -4,7 +4,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import 'package:ruangpeduliapp/masyarakat/profile/edit_profil_screen.dart';
-
 import 'edit_profil_screen_test.mocks.dart';
 
 @GenerateMocks([ProfileApi])
