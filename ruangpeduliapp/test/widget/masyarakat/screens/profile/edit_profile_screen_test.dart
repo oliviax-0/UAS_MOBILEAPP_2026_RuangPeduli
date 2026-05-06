@@ -6,8 +6,12 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import 'package:ruangpeduliapp/masyarakat/profile/edit_profil_screen.dart';
+<<<<<<< HEAD:ruangpeduliapp/test/widget/masyarakat/screens/profile/edit_profil_screen.dart
+import 'edit_profil_screen_test.mocks.dart';
+=======
 
 import 'edit_profile_screen_test.mocks.dart';
+>>>>>>> fa9cd27ad87a6276f9ce84eedf90b21864cce7f5:ruangpeduliapp/test/widget/masyarakat/screens/profile/edit_profile_screen_test.dart
 
 @GenerateMocks([ProfileApi])
 void main() {

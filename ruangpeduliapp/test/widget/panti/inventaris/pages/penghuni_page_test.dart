@@ -5,39 +5,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_anggota.dart';
 
 void main() {
-  testWidgets('Penghuni page render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Penghuni page render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: InventoryPantiAnggota(),
+        home: DaftarPenghuniScreen(userId: null), // ✅ dummy mode (skip API)
       ),
     );
 
-    // render awal
-    await tester.pump();
-
-    // tunggu async selesai
     await tester.pumpAndSettle();
 
     // page tampil
-    expect(find.byType(InventoryPantiAnggota), findsOneWidget);
+    expect(find.byType(DaftarPenghuniScreen), findsOneWidget);
 
     // scaffold tampil
     expect(find.byType(Scaffold), findsOneWidget);
 
-    // kemungkinan komponen UI
-    final loading = find.byType(CircularProgressIndicator);
-    final list = find.byType(ListView);
-    final search = find.byType(TextField);
-    final empty = find.textContaining('Belum');
+    // title sesuai UI (kalau di lib judulnya "Penghuni")
+    expect(find.text('Penghuni'), findsOneWidget);
 
-    expect(
-      loading.evaluate().isNotEmpty ||
-          list.evaluate().isNotEmpty ||
-          search.evaluate().isNotEmpty ||
-          empty.evaluate().isNotEmpty,
-      true,
-    );
+    // state dummy harusnya empty (sesuaikan dengan text di UI lib)usnya empty (sesuaikan dengan text di UI lib)
+    expect(find.text('Belum ada penghuni.'), findsOneWidget);
   });
 }
