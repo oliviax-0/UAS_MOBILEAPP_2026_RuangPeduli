@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_anggota.dart';
 
 void main() {
@@ -11,12 +10,8 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
 
-          // ✅ GANTI CLASS DI BAWAH SESUAI
-          // CLASS ASLI DI inventory_panti_anggota.dart
-
-          home: InventarisAnggotaScreen(
-            userId: 1,
-            pantiId: 1,
+          home:DaftarPegawaiScreen(
+            userId: null,
           ),
         ),
       );

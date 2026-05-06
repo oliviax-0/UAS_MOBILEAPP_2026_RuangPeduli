@@ -5,12 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_anggota.dart';
 
 void main() {
-  testWidgets('Penghuni flow test',
-      (WidgetTester tester) async {
-
+  testWidgets('Penghuni flow test', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: InventoryPantiAnggota(),
+        home: DaftarPenghuniScreen(userId: null),
       ),
     );
 
@@ -21,13 +19,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // halaman tampil
-    expect(find.byType(InventoryPantiAnggota), findsOneWidget);
+    expect(find.byType(DaftarPenghuniScreen), findsOneWidget);
 
     // kemungkinan UI
     final loading = find.byType(CircularProgressIndicator);
     final list = find.byType(ListView);
     final search = find.byType(TextField);
-    final empty = find.textContaining('Belum');
+    final empty = find.textContaining('Belum ada penghuni');
 
     expect(
       loading.evaluate().isNotEmpty ||
