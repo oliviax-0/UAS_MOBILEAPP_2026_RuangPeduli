@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -32,6 +34,7 @@ void main() {
       alamatPanti: 'Jl. Melati No. 10, Jakarta',
       nomorPanti: '081111111111',
       username: 'kasih_ibu',
+      email: 'kasih_ibu@panti.com',
       lat: -6.2,
       lng: 106.8,
       profilePicture: null,
@@ -41,18 +44,40 @@ void main() {
   ];
 
   final dummyDonations = [
-    DonationModel(id: 1, jumlah: 50000, pantiId: 1, userId: 1),
-    DonationModel(id: 2, jumlah: 150000, pantiId: 1, userId: 1),
+    DonasiModel(id: 1, namaPanti: 'Panti Kasih', jumlah: 50000, metodePembayaran: 'Transfer', noReferensi: 'REF001', tanggal: '2024-01-01T10:00:00Z', tanggalLabel: '1 Januari 2024'),
+    DonasiModel(id: 2, namaPanti: 'Panti Kasih', jumlah: 150000, metodePembayaran: 'Transfer', noReferensi: 'REF002', tanggal: '2024-01-02T11:00:00Z', tanggalLabel: '2 Januari 2024'),
   ];
 
   setUp(() {
     mockProfileApi = MockProfileApi();
     mockDonationApi = MockDonationApi();
+
+    // Default stub behavior for tests that do not specify custom responses.
+    when(mockProfileApi.fetchMasyarakatProfile(any))
+        .thenAnswer((_) async => dummyProfile);
+    when(mockProfileApi.fetchAllPanti())
+        .thenAnswer((_) async => dummyPantiList);
+    when(mockDonationApi.fetchDonations(any))
+        .thenAnswer((_) async => []);
   });
 
-  Widget buildWidget({int? userId = 1}) {
+  Widget buildWidget({
+    int? userId = 1,
+    ProfileApi? profileApi,
+    DonationApi? donationApi,
+    WidgetBuilder? homeScreenBuilder,
+    WidgetBuilder? searchScreenBuilder,
+    WidgetBuilder? historyScreenBuilder,
+  }) {
     return MaterialApp(
-      home: ProfileScreen(userId: userId),
+      home: ProfileScreen(
+        userId: userId,
+        profileApi: profileApi ?? mockProfileApi,
+        donationApi: donationApi ?? mockDonationApi,
+        homeScreenBuilder: homeScreenBuilder,
+        searchScreenBuilder: searchScreenBuilder,
+        historyScreenBuilder: historyScreenBuilder,
+      ),
     );
   }
 
@@ -70,10 +95,13 @@ void main() {
       when(mockDonationApi.fetchDonations(any))
           .thenAnswer((_) async => []);
 
-      await tester.pumpWidget(buildWidget());
+      await tester.pumpWidget(buildWidget(
+        profileApi: mockProfileApi,
+        donationApi: mockDonationApi,
+      ));
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.person_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.person_rounded), findsWidgets);
     });
 
     testWidgets('Avatar Container berbentuk lingkaran (BoxShape.circle)',
@@ -215,8 +243,9 @@ void main() {
 
     testWidgets('Menampilkan teks fallback "Pengguna" saat profil belum dimuat',
         (WidgetTester tester) async {
+      final profileCompleter = Completer<SocietyProfileModel>();
       when(mockProfileApi.fetchMasyarakatProfile(any))
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 10), () => dummyProfile));
+          .thenAnswer((_) => profileCompleter.future);
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => []);
       when(mockDonationApi.fetchDonations(any))
@@ -404,8 +433,9 @@ void main() {
         (WidgetTester tester) async {
       when(mockProfileApi.fetchMasyarakatProfile(any))
           .thenAnswer((_) async => dummyProfile);
+      final pantiCompleter = Completer<List<PantiProfileModel>>();
       when(mockProfileApi.fetchAllPanti())
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 10), () => []));
+          .thenAnswer((_) => pantiCompleter.future);
       when(mockDonationApi.fetchDonations(any))
           .thenAnswer((_) async => []);
 
@@ -460,12 +490,17 @@ void main() {
       when(mockDonationApi.fetchDonations(any))
           .thenAnswer((_) async => []);
 
-      await tester.pumpWidget(buildWidget());
+      await tester.pumpWidget(buildWidget(
+        homeScreenBuilder: (_) => const Scaffold(
+          body: Center(child: Text('Home Placeholder')),
+        ),
+      ));
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.home_rounded));
       await tester.pumpAndSettle();
 
+      expect(find.text('Home Placeholder'), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
     });
   });
@@ -499,12 +534,17 @@ void main() {
       when(mockDonationApi.fetchDonations(any))
           .thenAnswer((_) async => []);
 
-      await tester.pumpWidget(buildWidget());
+      await tester.pumpWidget(buildWidget(
+        searchScreenBuilder: (_) => const Scaffold(
+          body: Center(child: Text('Search Placeholder')),
+        ),
+      ));
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.search_rounded));
       await tester.pumpAndSettle();
 
+      expect(find.text('Search Placeholder'), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
     });
   });
@@ -538,12 +578,17 @@ void main() {
       when(mockDonationApi.fetchDonations(any))
           .thenAnswer((_) async => []);
 
-      await tester.pumpWidget(buildWidget());
+      await tester.pumpWidget(buildWidget(
+        historyScreenBuilder: (_) => const Scaffold(
+          body: Center(child: Text('History Placeholder')),
+        ),
+      ));
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.history_rounded));
       await tester.pumpAndSettle();
 
+      expect(find.text('History Placeholder'), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
     });
   });
@@ -565,7 +610,12 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
-      expect(find.byIcon(Icons.person_rounded), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Icon && widget.icon == Icons.person_rounded && widget.size == 28,
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

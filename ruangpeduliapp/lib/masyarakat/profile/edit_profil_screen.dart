@@ -9,8 +9,9 @@ const Color _kPink = Color(0xFFF47B8C);
 class EditProfilScreen extends StatefulWidget {
   final SocietyProfileModel? profile;
   final int? userId;
+  final ProfileApi? profileApi;
 
-  const EditProfilScreen({super.key, this.profile, this.userId});
+  const EditProfilScreen({super.key, this.profile, this.userId, this.profileApi});
 
   @override
   State<EditProfilScreen> createState() => _EditProfilScreenState();
@@ -187,7 +188,8 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     try {
       final namaPengguna = _namaPenggunaCtrl.text.trim();
 
-      final updated = await ProfileApi().updateMasyarakatProfile(
+      final profileApi = widget.profileApi ?? ProfileApi();
+      final updated = await profileApi.updateMasyarakatProfile(
         profileId,
         namaPengguna: namaPengguna.isNotEmpty ? namaPengguna : null,
         alamat: widget.profile?.alamat,
