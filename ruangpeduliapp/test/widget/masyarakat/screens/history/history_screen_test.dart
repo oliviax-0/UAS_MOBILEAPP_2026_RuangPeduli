@@ -351,7 +351,7 @@ void main() {
       expect(
         find.byWidgetPredicate((w) =>
             w is Container &&
-            w.color == const Color(0xFFF47B8C)),
+            w.color == const Color(0xFFF47B7C)),
         findsWidgets,
       );
     });
