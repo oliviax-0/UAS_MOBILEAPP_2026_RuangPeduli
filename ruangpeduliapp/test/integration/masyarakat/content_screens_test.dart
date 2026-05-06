@@ -18,20 +18,30 @@ void main() {
   // ─────────────────────────────────────────────
   group('BeritaDetailScreen', () {
     BeritaModel _makeBerita({
+      int id = 1,
       String title = 'Panti Butuh Bantuan',
       String content = 'Isi berita yang panjang di sini.',
+      String authorName = 'Admin',
       String pantiName = 'Panti Asuhan Harapan',
       int? pantiId = 1,
       String? thumbnail,
       String? pantiProfilePicture,
+      String createdAt = '2026-05-06T00:00:00Z',
+      int upvoteCount = 0,
+      int downvoteCount = 0,
     }) =>
         BeritaModel(
+          id: id,
           title: title,
           content: content,
           pantiName: pantiName,
+          authorName: authorName,
           pantiId: pantiId,
           thumbnail: thumbnail,
           pantiProfilePicture: pantiProfilePicture,
+          createdAt: createdAt,
+          upvoteCount: upvoteCount,
+          downvoteCount: downvoteCount,
         );
 
     testWidgets('renders title, content, panti name', (tester) async {
@@ -45,7 +55,8 @@ void main() {
       expect(find.text('Panti Asuhan Harapan'), findsOneWidget);
     });
 
-    testWidgets('shows placeholder thumbnail when no image URL', (tester) async {
+    testWidgets('shows placeholder thumbnail when no image URL',
+        (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: BeritaDetailScreen(berita: _makeBerita(thumbnail: null)),
       ));
@@ -54,7 +65,8 @@ void main() {
       expect(find.byIcon(Icons.image_rounded), findsOneWidget);
     });
 
-    testWidgets('shows default panti icon when no profile picture', (tester) async {
+    testWidgets('shows default panti icon when no profile picture',
+        (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: BeritaDetailScreen(
           berita: _makeBerita(pantiProfilePicture: null),
@@ -65,7 +77,8 @@ void main() {
       expect(find.byIcon(Icons.home_work_rounded), findsOneWidget);
     });
 
-    testWidgets('"Lihat Profil" button visible when pantiId is set', (tester) async {
+    testWidgets('"Lihat Profil" button visible when pantiId is set',
+        (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: BeritaDetailScreen(berita: _makeBerita(pantiId: 5), userId: 1),
       ));
