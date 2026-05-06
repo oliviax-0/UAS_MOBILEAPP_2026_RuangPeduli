@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// ✅ sesuaikan dengan file asli kamu
-import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_produkbaru.dart';
-
 void main() {
   testWidgets('Dropdown widget render & select test',
       (WidgetTester tester) async {

@@ -19,6 +19,7 @@ void main() {
       alamatPanti: 'Jl. Melati No. 10, Jakarta',
       nomorPanti: '081234567890',
       username: 'kasih_ibu',
+      email: 'kasih_ibu@example.com',
       lat: -6.2000,
       lng: 106.8167,
       profilePicture: null,
@@ -31,6 +32,7 @@ void main() {
       alamatPanti: 'Jl. Anggrek No. 5, Bandung',
       nomorPanti: '089876543210',
       username: 'panti_sejahtera',
+      email: 'panti_sejahtera@example.com',
       lat: -6.9147,
       lng: 107.6098,
       profilePicture: null,
@@ -260,8 +262,8 @@ void main() {
     testWidgets('Menampilkan loading indicator saat data sedang dimuat',
         (WidgetTester tester) async {
       // Simulasi fetchAllPanti yang tidak selesai (pending future)
-      when(mockProfileApi.fetchAllPanti())
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 10), () => []));
+      when(mockProfileApi.fetchAllPanti()).thenAnswer(
+          (_) => Future.delayed(const Duration(seconds: 10), () => []));
 
       await tester.pumpWidget(buildWidget());
       // Pump sekali agar build() dipanggil tetapi future belum selesai
@@ -289,7 +291,8 @@ void main() {
   //            SearchScreen._distanceTo(), SearchScreen._formatDistance()
   // ─────────────────────────────────────────────────────────────
   group('_PantiCard — kartu panti dengan detail informasi', () {
-    testWidgets('Menampilkan nama panti pada kartu', (WidgetTester tester) async {
+    testWidgets('Menampilkan nama panti pada kartu',
+        (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
 
@@ -300,7 +303,8 @@ void main() {
       expect(find.text('Panti Sejahtera'), findsOneWidget);
     });
 
-    testWidgets('Menampilkan alamat panti pada kartu', (WidgetTester tester) async {
+    testWidgets('Menampilkan alamat panti pada kartu',
+        (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
 
@@ -362,12 +366,13 @@ void main() {
   //    Metode: SearchScreen._openPantiDetail()
   // ─────────────────────────────────────────────────────────────
   group('GestureDetector Kunjungi Profil — navigasi ke detail panti', () {
-    testWidgets('Tap "Kunjungi Profil" memanggil _openPantiDetail dan menampilkan loading',
+    testWidgets(
+        'Tap "Kunjungi Profil" memanggil _openPantiDetail dan menampilkan loading',
         (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
-      when(mockProfileApi.fetchPantiMedia(any))
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 5), () => []));
+      when(mockProfileApi.fetchPantiMedia(any)).thenAnswer(
+          (_) => Future.delayed(const Duration(seconds: 5), () => []));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -405,8 +410,7 @@ void main() {
         (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
-      when(mockProfileApi.fetchPantiMedia(any))
-          .thenThrow(Exception('Timeout'));
+      when(mockProfileApi.fetchPantiMedia(any)).thenThrow(Exception('Timeout'));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -605,7 +609,8 @@ void main() {
       expect(find.byIcon(Icons.history_rounded), findsOneWidget);
     });
 
-    testWidgets('Tap ikon History melakukan pushReplacement ke RiwayatDonasiScreen',
+    testWidgets(
+        'Tap ikon History melakukan pushReplacement ke RiwayatDonasiScreen',
         (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
@@ -668,6 +673,29 @@ class _LocationRationaleDialogTestWrapper extends StatelessWidget {
         ),
         child: const Text('Show Dialog'),
       ),
+    );
+  }
+}
+
+/// Local test-only dialog because `_LocationRationaleDialog` in production code
+/// is private to its library and cannot be referenced from this test file.
+class _LocationRationaleDialog extends StatelessWidget {
+  const _LocationRationaleDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Izinkan Akses Lokasi'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Nanti saja'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Izinkan'),
+        ),
+      ],
     );
   }
 }

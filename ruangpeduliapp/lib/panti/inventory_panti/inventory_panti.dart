@@ -19,6 +19,67 @@ const Color kRed = Color(0xFFE53935);
 
 // ─── Shared Widgets ──────────────────────────────────────────────────────────
 
+class NotifBadge extends StatelessWidget {
+  final int count;
+  final VoidCallback? onTap;
+
+  const NotifBadge({
+    super.key,
+    required this.count,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.notifications_rounded,
+                color: Color(0xFF1A1A1A), size: 20),
+          ),
+          if (count > 0)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                decoration:
+                    const BoxDecoration(color: kRed, shape: BoxShape.circle),
+                child: Text(
+                  count > 99 ? '99+' : '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    height: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class HeaderWidget extends StatelessWidget {
   final String title;
   final VoidCallback onNotifTap;
@@ -60,53 +121,7 @@ class HeaderWidget extends StatelessWidget {
               ),
             ),
           ),
-          GestureDetector(
-            onTap: onNotifTap,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.notifications_rounded,
-                      color: Color(0xFF1A1A1A), size: 20),
-                ),
-                if (notifCount > 0)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      constraints:
-                          const BoxConstraints(minWidth: 16, minHeight: 16),
-                      decoration: const BoxDecoration(
-                          color: kRed, shape: BoxShape.circle),
-                      child: Text(
-                        notifCount > 99 ? '99+' : '$notifCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+          NotifBadge(count: notifCount, onTap: onNotifTap),
         ],
       ),
     );
