@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -50,6 +52,8 @@ void main() {
       home: SearchScreen(
         userId: userId,
         initialQuery: initialQuery,
+        profileApi: mockProfileApi,
+        enableLocationFetch: false,
       ),
     );
   }
@@ -235,6 +239,9 @@ void main() {
       );
       await tester.pump();
 
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+
       expect(find.text('Izinkan Akses Lokasi'), findsOneWidget);
     });
 
@@ -249,6 +256,9 @@ void main() {
       );
       await tester.pump();
 
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+
       expect(find.text('Izinkan'), findsOneWidget);
       expect(find.text('Nanti saja'), findsOneWidget);
     });
@@ -262,8 +272,10 @@ void main() {
     testWidgets('Menampilkan loading indicator saat data sedang dimuat',
         (WidgetTester tester) async {
       // Simulasi fetchAllPanti yang tidak selesai (pending future)
-      when(mockProfileApi.fetchAllPanti()).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 10), () => []));
+      // Gunakan Completer agar tidak membuat Timer yang akan dianggap "pending"
+      // saat test selesai.
+      final pending = Completer<List<PantiProfileModel>>();
+      when(mockProfileApi.fetchAllPanti()).thenAnswer((_) => pending.future);
 
       await tester.pumpWidget(buildWidget());
       // Pump sekali agar build() dipanggil tetapi future belum selesai
@@ -371,8 +383,9 @@ void main() {
         (WidgetTester tester) async {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
-      when(mockProfileApi.fetchPantiMedia(any)).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 5), () => []));
+      final pendingMedia = Completer<List<PantiMediaModel>>();
+      when(mockProfileApi.fetchPantiMedia(any))
+          .thenAnswer((_) => pendingMedia.future);
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -547,7 +560,6 @@ void main() {
       when(mockProfileApi.fetchAllPanti())
           .thenAnswer((_) async => dummyPantiList);
 
-      bool popped = false;
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -556,7 +568,11 @@ void main() {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SearchScreen(userId: null),
+                    builder: (_) => SearchScreen(
+                      userId: null,
+                      profileApi: mockProfileApi,
+                      enableLocationFetch: false,
+                    ),
                   ),
                 );
               },

@@ -10,13 +10,22 @@ import 'package:ruangpeduliapp/masyarakat/profile/profile_screen.dart';
 class SearchScreen extends StatefulWidget {
   final int? userId;
   final String initialQuery;
-  const SearchScreen({super.key, this.userId, this.initialQuery = ''});
+  final ProfileApi? profileApi;
+  final bool enableLocationFetch;
+  const SearchScreen({
+    super.key,
+    this.userId,
+    this.initialQuery = '',
+    this.profileApi,
+    this.enableLocationFetch = true,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  late final ProfileApi _profileApi;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   int _selectedIndex = 1;
@@ -96,7 +105,11 @@ class _SearchScreenState extends State<SearchScreen> {
         locationSettings:
             const LocationSettings(accuracy: LocationAccuracy.medium),
       );
-      if (mounted) setState(() { _userPosition = pos; _loadingLocation = false; });
+      if (mounted)
+        setState(() {
+          _userPosition = pos;
+          _loadingLocation = false;
+        });
     } catch (_) {
       if (mounted) setState(() => _loadingLocation = false);
     }
@@ -104,10 +117,18 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _fetchPanti() async {
     try {
-      final list = await ProfileApi().fetchAllPanti();
-      if (mounted) setState(() { _pantiList = list; _loadingPanti = false; });
+      final list = await _profileApi.fetchAllPanti();
+      if (mounted)
+        setState(() {
+          _pantiList = list;
+          _loadingPanti = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _errorPanti = e.toString(); _loadingPanti = false; });
+      if (mounted)
+        setState(() {
+          _errorPanti = e.toString();
+          _loadingPanti = false;
+        });
     }
   }
 
@@ -117,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _openPantiDetail(PantiProfileModel panti) async {
     setState(() => _loadingPantiId.add(panti.id));
     try {
-      final media = await ProfileApi().fetchPantiMedia(panti.id);
+      final media = await _profileApi.fetchPantiMedia(panti.id);
       if (!mounted) return;
       final mediaUrls = media
           .where((m) => m.file != null && m.file!.isNotEmpty)
@@ -131,7 +152,9 @@ class _SearchScreenState extends State<SearchScreen> {
             namaPanti: panti.namaPanti,
             username: '@${panti.username}',
             nomorPanti: panti.nomorPanti,
-            alamatPanti: panti.fullAddress.isNotEmpty ? panti.fullAddress : panti.alamatPanti,
+            alamatPanti: panti.fullAddress.isNotEmpty
+                ? panti.fullAddress
+                : panti.alamatPanti,
             description: panti.description,
             profilePicture: panti.profilePicture,
             terkumpul: panti.formattedTotalTerkumpul,
@@ -157,7 +180,8 @@ class _SearchScreenState extends State<SearchScreen> {
       Navigator.of(context).pop();
     } else if (index == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => RiwayatDonasiScreen(userId: widget.userId)),
+        MaterialPageRoute(
+            builder: (_) => RiwayatDonasiScreen(userId: widget.userId)),
       );
     } else if (index == 3) {
       Navigator.of(context).pushReplacement(
@@ -195,7 +219,8 @@ class _SearchScreenState extends State<SearchScreen> {
         if (r.recognizedWords.isNotEmpty) {
           _searchController.value = TextEditingValue(
             text: r.recognizedWords,
-            selection: TextSelection.collapsed(offset: r.recognizedWords.length),
+            selection:
+                TextSelection.collapsed(offset: r.recognizedWords.length),
           );
         }
         if (r.finalResult) {
@@ -213,15 +238,21 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _profileApi = widget.profileApi ?? ProfileApi();
     if (widget.initialQuery.isNotEmpty) {
       _searchController.text = widget.initialQuery;
     }
-    _fetchLocation();
+    if (widget.enableLocationFetch) {
+      _fetchLocation();
+    } else {
+      _loadingLocation = false;
+    }
     _fetchPanti();
     // Only auto-focus keyboard when opened without a pre-filled query
     if (widget.initialQuery.isEmpty) {
-      Future.delayed(const Duration(milliseconds: 200), () {
-        if (mounted) _focusNode.requestFocus();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _focusNode.requestFocus();
       });
     }
     _searchController.addListener(() => setState(() {}));
@@ -231,7 +262,9 @@ class _SearchScreenState extends State<SearchScreen> {
           setState(() => _listening = false);
         }
       },
-      onError: (_) { if (mounted) setState(() => _listening = false); },
+      onError: (_) {
+        if (mounted) setState(() => _listening = false);
+      },
     ).then((ok) async {
       if (!mounted) return;
       if (ok) {
@@ -240,7 +273,11 @@ class _SearchScreenState extends State<SearchScreen> {
           (l) => l.localeId.startsWith('id'),
           orElse: () => locales.first,
         );
-        if (mounted) setState(() { _sttReady = true; _sttLocale = idLocale.localeId; });
+        if (mounted)
+          setState(() {
+            _sttReady = true;
+            _sttLocale = idLocale.localeId;
+          });
       }
     });
   }
@@ -297,7 +334,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: Icon(
                         _listening ? Icons.mic_rounded : Icons.mic_none_rounded,
                         size: 20,
-                        color: _listening ? const Color(0xFFF47B8C) : Colors.grey.shade500,
+                        color: _listening
+                            ? const Color(0xFFF47B8C)
+                            : Colors.grey.shade500,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -343,8 +382,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       width: 12,
                       height: 12,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: const Color(0xFFF47B8C)),
+                          strokeWidth: 2, color: const Color(0xFFF47B8C)),
                     ),
                     const SizedBox(width: 6),
                     Text('Mendeteksi lokasi Anda...',
@@ -397,7 +435,10 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 8),
             TextButton(
               onPressed: () {
-                setState(() { _loadingPanti = true; _errorPanti = null; });
+                setState(() {
+                  _loadingPanti = true;
+                  _errorPanti = null;
+                });
                 _fetchPanti();
               },
               child: const Text('Coba lagi',
@@ -472,10 +513,22 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(icon: Icons.home_rounded, selected: _selectedIndex == 0, onTap: () => _onNavTap(0)),
-              _NavItem(icon: Icons.search_rounded, selected: _selectedIndex == 1, onTap: () => _onNavTap(1)),
-              _NavItem(icon: Icons.history_rounded, selected: _selectedIndex == 2, onTap: () => _onNavTap(2)),
-              _NavItem(icon: Icons.person_rounded, selected: _selectedIndex == 3, onTap: () => _onNavTap(3)),
+              _NavItem(
+                  icon: Icons.home_rounded,
+                  selected: _selectedIndex == 0,
+                  onTap: () => _onNavTap(0)),
+              _NavItem(
+                  icon: Icons.search_rounded,
+                  selected: _selectedIndex == 1,
+                  onTap: () => _onNavTap(1)),
+              _NavItem(
+                  icon: Icons.history_rounded,
+                  selected: _selectedIndex == 2,
+                  onTap: () => _onNavTap(2)),
+              _NavItem(
+                  icon: Icons.person_rounded,
+                  selected: _selectedIndex == 3,
+                  onTap: () => _onNavTap(3)),
             ],
           ),
         ),
@@ -504,9 +557,8 @@ class _PantiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = panti.fullAddress.isNotEmpty
-        ? panti.fullAddress
-        : panti.alamatPanti;
+    final address =
+        panti.fullAddress.isNotEmpty ? panti.fullAddress : panti.alamatPanti;
 
     return GestureDetector(
       onTap: onLocationTap,
@@ -569,8 +621,7 @@ class _PantiCard extends StatelessWidget {
             if (isNearest) ...[
               const SizedBox(height: 4),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF43D5E),
                   borderRadius: BorderRadius.circular(20),
@@ -598,9 +649,7 @@ class _PantiCard extends StatelessWidget {
                   child: Text(
                     address,
                     style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF1A1A1A),
-                        height: 1.55),
+                        fontSize: 13, color: Color(0xFF1A1A1A), height: 1.55),
                   ),
                 ),
                 if (distanceLabel.isNotEmpty) ...[
@@ -637,9 +686,7 @@ class _PantiCard extends StatelessWidget {
                   child: Text(
                     '${panti.nomorPanti} (hubungi untuk jam kunjungan)',
                     style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                        height: 1.4),
+                        fontSize: 13, color: Colors.grey.shade600, height: 1.4),
                   ),
                 ),
               ],
@@ -704,8 +751,8 @@ class _LocationRationaleDialog extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: const Text('Izinkan',
-                    style: TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
               ),
             ),
             const SizedBox(height: 10),
@@ -714,8 +761,8 @@ class _LocationRationaleDialog extends StatelessWidget {
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: Text('Nanti saja',
-                    style: TextStyle(
-                        fontSize: 14, color: Colors.grey.shade500)),
+                    style:
+                        TextStyle(fontSize: 14, color: Colors.grey.shade500)),
               ),
             ),
           ],

@@ -47,10 +47,15 @@ void main() {
       await tester.enterText(textFields.first, '');
       await tester.pump();
 
+      // Tombol simpan berada di bagian bawah scroll view.
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+
       await tester.tap(saveButton);
       await tester.pumpAndSettle();
 
-      expect(find.text('Mohon isi semua kolom yang diperlukan'), findsOneWidget);
+      expect(
+          find.text('Mohon isi semua kolom yang diperlukan'), findsOneWidget);
     }
 
     // Minimal halaman tetap tidak crash
