@@ -165,7 +165,7 @@ void main() {
       );
 
       expect(result, isNotNull);
-      expect(result!.namaPengguna, equals('Budi Updated'));
+      expect(result.namaPengguna, equals('Budi Updated'));
       expect(result.username, equals('budi_new'));
     });
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:ruangpeduliapp/auth/auth_widgets.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import 'package:ruangpeduliapp/masyarakat/profile/edit_profil_screen.dart';
 import '../transaksi/konfirmasi_metode_screen_test.mocks.dart';
@@ -296,7 +297,8 @@ void main() {
       expect(find.text('budi@email.com'), findsOneWidget);
       expect(
         find.byWidgetPredicate(
-          (widget) => widget is Icon &&
+          (widget) =>
+              widget is Icon &&
               widget.icon == Icons.lock_outline_rounded &&
               widget.size == 16,
         ),
@@ -328,7 +330,8 @@ void main() {
       await tester.tap(button);
       await tester.pump();
 
-      expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
+      expect(
+          find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
     });
   });
 
@@ -359,7 +362,8 @@ void main() {
       expect(find.byType(Dialog), findsOneWidget);
     });
 
-    testWidgets('Error SnackBar muncul saat userId null dan ganti password di-tap',
+    testWidgets(
+        'Error SnackBar muncul saat userId null dan ganti password di-tap',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
@@ -369,7 +373,8 @@ void main() {
       await tester.tap(button);
       await tester.pump();
 
-      expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
+      expect(
+          find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
     });
   });
 
@@ -401,8 +406,7 @@ void main() {
       expect(find.byIcon(Icons.close_rounded), findsOneWidget);
     });
 
-    testWidgets('Tap ikon X menutup dialog',
-        (WidgetTester tester) async {
+    testWidgets('Tap ikon X menutup dialog', (WidgetTester tester) async {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
@@ -509,7 +513,8 @@ void main() {
       );
     });
 
-    testWidgets('Tombol "Simpan" menampilkan SnackBar error saat profileId null',
+    testWidgets(
+        'Tombol "Simpan" menampilkan SnackBar error saat profileId null',
         (WidgetTester tester) async {
       // Profile tanpa id (null scenario)
       await tester.pumpWidget(buildWidget(profile: null));
@@ -525,7 +530,8 @@ void main() {
       expect(find.text('Profil tidak ditemukan'), findsOneWidget);
     });
 
-    testWidgets('Tombol "Simpan" menampilkan CircularProgressIndicator saat _saving',
+    testWidgets(
+        'Tombol "Simpan" menampilkan CircularProgressIndicator saat _saving',
         (WidgetTester tester) async {
       final mockProfileApi = MockProfileApi();
       final saveCompleter = Completer<SocietyProfileModel>();
@@ -555,7 +561,8 @@ void main() {
   //     Metode: EditProfilScreen._showError(), EditProfilScreen._onSimpan()
   // ─────────────────────────────────────────────────────────────
   group('SnackBar — menampilkan pesan sukses/error', () {
-    testWidgets('SnackBar error "Profil tidak ditemukan" muncul saat profileId null',
+    testWidgets(
+        'SnackBar error "Profil tidak ditemukan" muncul saat profileId null',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildWidget(profile: null));
       await tester.pump();
@@ -587,15 +594,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
+      expect(
+          find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
     });
 
-    testWidgets('SnackBar error muncul saat userId null dan tap Ganti Kata Sandi',
+    testWidgets(
+        'SnackBar error muncul saat userId null dan tap Ganti Kata Sandi',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildWidget(userId: null));
       await tester.pump();
 
-      final changePasswordButton = find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
+      final changePasswordButton =
+          find.widgetWithText(OutlinedButton, 'Ganti Kata Sandi');
       await tester.ensureVisible(changePasswordButton);
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
@@ -607,7 +617,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
+      expect(
+          find.text('Sesi tidak valid, silakan login ulang'), findsOneWidget);
     });
   });
 
