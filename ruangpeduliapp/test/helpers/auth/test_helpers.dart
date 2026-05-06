@@ -1,23 +1,17 @@
-// integration_test/helpers/test_helpers.dart
+// test/helpers/auth/test_helpers.dart
 //
 // Shared helpers and utilities for all integration tests
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:ruangpeduliapp/auth/auth_widgets.dart';
 import 'package:ruangpeduliapp/auth/role_selection_screen.dart';
 import 'package:ruangpeduliapp/auth/auth_options_screen.dart';
 import 'package:ruangpeduliapp/auth/login_screen.dart';
 import 'package:ruangpeduliapp/auth/signup_screen.dart';
-import 'package:ruangpeduliapp/auth/forgot_password_screen.dart';
-import 'package:ruangpeduliapp/auth/reset_password_otp_screen.dart';
-import 'package:ruangpeduliapp/auth/reset_password_new_screen.dart';
-import 'package:ruangpeduliapp/auth/verification_screen.dart';
 
 // ─────────────────────────────────────────────────────────────
 // App builder — starts from RoleSelectionScreen
-// (skipping SplashScreen animation for faster tests)
 // ─────────────────────────────────────────────────────────────
 Widget buildAuthApp() {
   return const MaterialApp(
@@ -31,22 +25,40 @@ Widget buildAuthApp() {
 
 /// Navigate from RoleSelectionScreen to AuthOptionsScreen
 Future<void> selectRole(WidgetTester tester, String role) async {
-  await tester.tap(find.text(role));
+  await tester.tap(find.text(role).first);
   await tester.pumpAndSettle();
   expect(find.byType(AuthOptionsScreen), findsOneWidget);
 }
 
 /// Navigate from AuthOptionsScreen to LoginScreen
 Future<void> goToLogin(WidgetTester tester) async {
-  await tester.tap(find.widgetWithText(DarkButton, 'Log In'));
+  // Find DarkButton containing 'Log In' text specifically
+  // AuthOptionsScreen has 2 DarkButtons — Log In and Sign Up
+  final buttons = find.byType(DarkButton);
+  // Log In is always the FIRST DarkButton in AuthOptionsScreen
+  await tester.tap(buttons.first);
   await tester.pumpAndSettle();
   expect(find.byType(LoginScreen), findsOneWidget);
 }
 
 /// Navigate from AuthOptionsScreen to SignUpScreen
 Future<void> goToSignUp(WidgetTester tester) async {
-  await tester.tap(find.widgetWithText(DarkButton, 'Sign Up'));
+  // Find the Sign Up button specifically (not Google Sign Up)
+  final signUpButton = find.widgetWithText(DarkButton, 'Sign Up');
+
+  // Scroll to make the button visible
+  await tester.dragUntilVisible(
+    signUpButton,
+    find.byType(SingleChildScrollView),
+    const Offset(0, -100),
+  );
   await tester.pumpAndSettle();
+
+  // Tap the Sign Up button
+  await tester.tap(signUpButton);
+  await tester.pumpAndSettle();
+
+  // Verify navigation
   expect(find.byType(SignUpScreen), findsOneWidget);
 }
 
@@ -57,9 +69,9 @@ Future<void> fillLoginForm(
   required String password,
 }) async {
   await tester.enterText(
-      find.widgetWithText(TextField, 'Masukan Email'), email);
+      find.widgetWithText(TextField, 'Masukan Email').first, email);
   await tester.enterText(
-      find.widgetWithText(TextField, 'Masukan Sandi'), password);
+      find.widgetWithText(TextField, 'Masukan Sandi').first, password);
 }
 
 /// Fill signup form with email, password and confirm password
@@ -70,24 +82,69 @@ Future<void> fillSignUpForm(
   required String confirmPassword,
 }) async {
   await tester.enterText(
-      find.widgetWithText(TextField, 'Masukan Email'), email);
+      find.widgetWithText(TextField, 'Masukan Email').first, email);
   await tester.enterText(
-      find.widgetWithText(TextField, 'Min. 6 karakter, 1 kapital, 1 angka'),
+      find
+          .widgetWithText(TextField, 'Min. 6 karakter, 1 kapital, 1 angka')
+          .first,
       password);
   await tester.enterText(
-      find.widgetWithText(TextField, 'Ulangi sandi'), confirmPassword);
+      find.widgetWithText(TextField, 'Ulangi sandi').first, confirmPassword);
 }
 
-/// Tap DarkButton and settle
+/// Tap the single DarkButton on current screen
+/// Use this only when there is exactly ONE DarkButton visible
 Future<void> tapDarkButton(WidgetTester tester) async {
-  await tester.ensureVisible(find.byType(DarkButton));
+  // Find first DarkButton (the submit button on SignUpScreen)
+  await tester.ensureVisible(find.byType(DarkButton).first);
   await tester.pumpAndSettle();
-  await tester.tap(find.byType(DarkButton));
+
+  await tester.tap(find.byType(DarkButton).first);
+  await tester.pumpAndSettle();
+}
+
+/// Tap DarkButton by its label text
+/// Use this when there are multiple DarkButtons on screen
+Future<void> tapDarkButtonWithLabel(WidgetTester tester, String label) async {
+  final button = find.widgetWithText(DarkButton, label).first;
+  await tester.ensureVisible(button);
+  await tester.pumpAndSettle();
+  await tester.tap(button);
   await tester.pump();
 }
 
 /// Go back using AuthBackButton
 Future<void> goBack(WidgetTester tester) async {
-  await tester.tap(find.byType(AuthBackButton));
+  await tester.tap(find.byType(AuthBackButton).first);
+  await tester.pumpAndSettle();
+}
+
+/// Tap DarkButton by its text
+Future<void> tapDarkButtonWithText(WidgetTester tester,
+    {String? buttonText}) async {
+  // If buttonText is provided, find button by text
+  if (buttonText != null) {
+    await tester.ensureVisible(find.ancestor(
+      of: find.text(buttonText),
+      matching: find.byType(DarkButton),
+    ));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.ancestor(
+      of: find.text(buttonText),
+      matching: find.byType(DarkButton),
+    ));
+  } else {
+    // Default: find the first DarkButton on SignUpScreen
+    final signUpButtons = find.byWidgetPredicate(
+      (widget) => widget is DarkButton,
+    );
+
+    await tester.ensureVisible(signUpButtons.first);
+    await tester.pumpAndSettle();
+
+    await tester.tap(signUpButtons.first);
+  }
+
   await tester.pumpAndSettle();
 }
