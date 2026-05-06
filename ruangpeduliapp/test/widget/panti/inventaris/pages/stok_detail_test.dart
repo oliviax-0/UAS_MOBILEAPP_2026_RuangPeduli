@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-// ✅ sesuaikan dengan file asli kamu
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_stokmasuk.dart';
 
 void main() {
-  testWidgets('Stok detail page render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Stok detail page render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: InventoryPantiStokMasuk(),
+        home: StokMasukScreen(),
       ),
     );
 
@@ -21,7 +17,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // page tampil
-    expect(find.byType(InventoryPantiStokMasuk), findsOneWidget);
+    expect(find.byType(StokMasukScreen), findsOneWidget);
 
     // scaffold tampil
     expect(find.byType(Scaffold), findsOneWidget);
