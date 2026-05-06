@@ -3,8 +3,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
 import '../../../../widget/masyarakat/screens/search/search_screen_test.mocks.dart';
-import 'profile_api_test.dart';
-
 
 
 @GenerateMocks([ProfileApi])
