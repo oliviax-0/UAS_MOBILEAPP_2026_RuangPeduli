@@ -63,4 +63,16 @@ class InventoryState extends ChangeNotifier {
       return false;
     }
   }
+
+  /// Add new item
+  Future<bool> addItem(ItemModel item) async {
+    try {
+      final result = await api.addItem(item);
+      error = null;
+      return result;
+    } catch (e) {
+      error = e.toString();
+      return false;
+    }
+  }
 }
