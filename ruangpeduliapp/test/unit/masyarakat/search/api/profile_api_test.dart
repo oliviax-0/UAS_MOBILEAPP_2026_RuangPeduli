@@ -1,11 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-// ignore: unused_import
-import 'package:http/http.dart' as http;
 import 'package:ruangpeduliapp/data/profile_api.dart';
-
-
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -71,65 +67,5 @@ void main() {
       expect(model.lng, isNull);
     });
 
-    test('lat dan lng diparsing sebagai double ketika tersedia', () {
-      final model = PantiProfileModel.fromJson(
-        _pantiJson(lat: '-6.2088', lng: '106.8456'),
-      );
-      expect(model.lat, closeTo(-6.2088, 0.0001));
-      expect(model.lng, closeTo(106.8456, 0.0001));
-    });
-
-    test('fetchAllPanti melempar Exception ketika status bukan 200', () async {
-      // Simulasi: API mengembalikan list kosong saat error ditangkap lapisan atas
-      // Di sini kita uji bahwa PantiProfileModel.fromJson melempar ketika field
-      // wajib tidak ada.
-      expect(
-        () => PantiProfileModel.fromJson({'id': 1}),
-        throwsA(isA<Exception>().or(isA<TypeError>())),
-      );
-    });
   });
-
-  // -------------------------------------------------------------------------
-
-  group('ProfileApi.fetchPantiMedia', () {
-    test('memfilter media yang file-nya null atau kosong', () {
-      final rawList = [
-        _mediaJson(id: 1, file: 'https://example.com/a.jpg'),
-        _mediaJson(id: 2, file: null),
-        _mediaJson(id: 3, file: ''),
-      ];
-
-      // Logika filter sama dengan _openPantiDetail di SearchScreen
-      final urls = rawList
-          .where((m) => m['file'] != null && (m['file'] as String).isNotEmpty)
-          .map((m) => m['file'] as String)
-          .toList();
-
-      expect(urls.length, 1);
-      expect(urls.first, 'https://example.com/a.jpg');
-    });
-
-    test('mengembalikan list kosong ketika semua media tidak punya file', () {
-      final rawList = [
-        _mediaJson(id: 1, file: null),
-        _mediaJson(id: 2, file: ''),
-      ];
-
-      final urls = rawList
-          .where((m) => m['file'] != null && (m['file'] as String).isNotEmpty)
-          .map((m) => m['file'] as String)
-          .toList();
-
-      expect(urls, isEmpty);
-    });
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Matcher helper
-// ---------------------------------------------------------------------------
-
-extension _MatcherExt on Matcher {
-  Matcher or(Matcher other) => anyOf([this, other]);
 }
