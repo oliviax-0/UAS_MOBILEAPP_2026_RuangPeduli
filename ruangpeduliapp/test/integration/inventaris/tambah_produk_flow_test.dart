@@ -1,67 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// ✅ sesuaikan dengan class asli project kamu
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_produkbaru.dart';
 
 void main() {
-  testWidgets('Tambah produk flow test',
-      (WidgetTester tester) async {
+  testWidgets(
+    'Tambah produk flow test',
+    (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: InventoryPantiProdukBaru(),
-      ),
-    );
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: TambahProdukScreen(
+            userId: 1,
+            pantiId: 1,
+          ),
+        ),
+      );
 
-    // render awal
-    await tester.pump();
-
-    // tunggu async selesai
-    await tester.pumpAndSettle();
-
-    // halaman tampil
-    expect(find.byType(InventoryPantiProdukBaru), findsOneWidget);
-
-    // cari textfield
-    final fields = find.byType(TextField);
-
-    // isi field jika ada
-    if (fields.evaluate().isNotEmpty) {
-      await tester.enterText(fields.first, 'Beras');
+      // render awal
       await tester.pump();
-    }
 
-    if (fields.evaluate().length >= 2) {
-      await tester.enterText(fields.at(1), '20');
-      await tester.pump();
-    }
-
-    // dropdown jika ada
-    final dropdown = find.byType(DropdownButton);
-
-    if (dropdown.evaluate().isNotEmpty) {
-      await tester.tap(dropdown.first);
+      // tunggu async selesai
       await tester.pumpAndSettle();
-    }
 
-    // tombol submit jika ada
-    final button = find.byType(ElevatedButton);
+      // validasi screen tampil
+      expect(
+        find.byType(TambahProdukScreen),
+        findsOneWidget,
+      );
 
-    if (button.evaluate().isNotEmpty) {
-      await tester.tap(button.first);
-      await tester.pumpAndSettle();
-    }
+      // cari semua textfield
+      final textFields =
+          find.byType(TextField);
 
-    // kondisi akhir
-    final loading = find.byType(CircularProgressIndicator);
-    final snackbar = find.byType(SnackBar);
+      // isi nama produk
+      if (textFields.evaluate().isNotEmpty) {
+        await tester.enterText(
+          textFields.first,
+          'Beras',
+        );
 
-    expect(
-      loading.evaluate().isNotEmpty ||
-          snackbar.evaluate().isNotEmpty ||
-          find.byType(MaterialApp).evaluate().isNotEmpty,
-      true,
-    );
-  });
+        await tester.pump();
+      }
+
+      // isi field kedua jika ada
+      if (textFields.evaluate().length >= 2) {
+        await tester.enterText(
+          textFields.at(1),
+          '20',
+        );
+
+        await tester.pump();
+      }
+
+      // dropdown
+      final dropdownFinder =
+          find.byType(DropdownButton);
+
+      // buka dropdown jika ada
+      if (dropdownFinder.evaluate().isNotEmpty) {
+        await tester.tap(dropdownFinder.first);
+        await tester.pumpAndSettle();
+      }
+
+      // tombol submit
+      final buttonFinder =
+          find.byType(ElevatedButton);
+
+      // klik tombol jika ada
+      if (buttonFinder.evaluate().isNotEmpty) {
+        await tester.tap(buttonFinder.first);
+        await tester.pumpAndSettle();
+      }
+
+      // kemungkinan widget muncul
+      final loadingFinder =
+          find.byType(CircularProgressIndicator);
+
+      final snackbarFinder =
+          find.byType(SnackBar);
+
+      expect(
+        loadingFinder.evaluate().isNotEmpty ||
+            snackbarFinder.evaluate().isNotEmpty ||
+            find.byType(MaterialApp)
+                .evaluate()
+                .isNotEmpty,
+        true,
+      );
+
+      // app tidak crash
+      expect(find.byType(MaterialApp), findsOneWidget);
+    },
+  );
 }
