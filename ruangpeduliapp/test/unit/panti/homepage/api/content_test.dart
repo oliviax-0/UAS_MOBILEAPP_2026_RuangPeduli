@@ -3,26 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:ruangpeduliapp/data/content_api.dart';
+import '../../../../utils/fake_http_client.dart'; // Import FakeClient dari file utilitas
 
-/// Fake HTTP Client
-class FakeClient extends http.BaseClient {
-  final http.Response Function(http.Request request) handler;
-
-  FakeClient(this.handler);
-
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final req = request as http.Request;
-    final response = handler(req);
-
-    return http.StreamedResponse(
-      Stream.value(response.bodyBytes),
-      response.statusCode,
-      headers: response.headers,
-    );
-  }
-}
-
+// =========================
+// CONTENT API TEST
+// =========================
 void main() {
   group('ContentApi Test', () {
 
@@ -63,7 +48,7 @@ void main() {
 
       final api = ContentApi(client: client);
 
-      expect(() => api.fetchBeritas(), throwsException);
+      expect(api.fetchBeritas(), throwsException);
     });
 
   });
