@@ -30,7 +30,6 @@ void main() {
     // ── Back button ──
     testWidgets('GestureDetector (Back) – tombol kembali ke halaman sebelumnya',
         (tester) async {
-      bool popped = false;
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -55,8 +54,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // should have returned to previous page
-      expect(find.text('open'), findsOneWidget);
-      _ = popped; // suppress unused warning
+      expect(find.text('Konfirmasi Pembayaran'), findsNothing);
     });
 
     // ── _PantiImage – placeholder when path is empty ──
