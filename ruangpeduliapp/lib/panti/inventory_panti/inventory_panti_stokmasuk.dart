@@ -661,25 +661,44 @@ class _StokDetailKategoriScreenState extends State<StokDetailKategoriScreen> {
 
 // ─── Search Bar ───────────────────────────────────────────────────────────────
 
+class SearchWidget extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const SearchWidget({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F2),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: 'Search',
+          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: Colors.grey[400], size: 20),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+}
+
 Widget _buildSearchBar(
     TextEditingController controller, VoidCallback onChanged) {
-  return Container(
-    height: 44,
-    decoration: BoxDecoration(
-      color: const Color(0xFFF2F2F2),
-      borderRadius: BorderRadius.circular(30),
-    ),
-    child: TextField(
-      controller: controller,
-      onChanged: (_) => onChanged(),
-      decoration: InputDecoration(
-        hintText: 'Search',
-        hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-        prefixIcon: Icon(Icons.search, color: Colors.grey[400], size: 20),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-      ),
-    ),
+  return SearchWidget(
+    controller: controller,
+    onChanged: (_) => onChanged(),
   );
 }
 
