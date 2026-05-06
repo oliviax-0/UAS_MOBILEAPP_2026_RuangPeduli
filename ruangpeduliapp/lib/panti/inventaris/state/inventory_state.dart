@@ -8,6 +8,7 @@ class InventoryState extends ChangeNotifier {
   int stokKeluar = 0;
   int notifCount = 0;
   List<ItemModel> items = [];
+  List<ItemModel> lowStockItems = [];
   String? error;
   bool isLoading = false;
 
@@ -73,6 +74,24 @@ class InventoryState extends ChangeNotifier {
     } catch (e) {
       error = e.toString();
       return false;
+    }
+  }
+
+  /// Load low stock items from API
+  Future<void> loadLowStock() async {
+    try {
+      isLoading = true;
+      error = null;
+      notifyListeners();
+
+      lowStockItems = await api.getLowStockItems();
+      error = null;
+    } catch (e) {
+      error = e.toString();
+      lowStockItems = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }
