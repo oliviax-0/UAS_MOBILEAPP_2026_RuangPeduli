@@ -1,201 +1,127 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
-import '../../../../widget/masyarakat/screens/search/search_screen_test.mocks.dart';
+import 'package:ruangpeduliapp/data/donation_api.dart';
+import 'package:ruangpeduliapp/data/data.dart';
 
-
-@GenerateMocks([ProfileApi])
 void main() {
-  late MockProfileApi mockProfileApi;
+  late MockClient mockClient;
 
   setUp(() {
-    mockProfileApi = MockProfileApi();
+    mockClient = MockClient((request) async {
+      final url = request.url.toString();
+      if (url.contains('/api/profiles/masyarakat/') && url.contains('user_id=1')) {
+        return http.Response('''
+{
+  "id": 1,
+  "username": "testuser",
+  "email": "test@example.com",
+  "nama_pengguna": "Test User",
+  "alamat": "Test Address",
+  "nomor_telepon": "123456789",
+  "jenis_kelamin": "Laki-laki",
+  "profile_picture": "pic.jpg"
+}
+        ''', 200);
+      } else if (url.contains('/api/donations/?user_id=1')) {
+        return http.Response('''
+[
+  {
+    "id": 1,
+    "nama_panti": "Panti Test",
+    "panti_image": null,
+    "jumlah": 100000,
+    "metode_pembayaran": "Transfer",
+    "no_referensi": "REF123",
+    "tanggal": "2023-01-01T00:00:00Z",
+    "tanggal_label": "1 Januari 2023"
+  }
+]
+        ''', 200);
+      } else if (url.contains('/api/donations/') && request.method == 'POST') {
+        return http.Response('''
+{
+  "id": 2,
+  "nama_panti": "New Panti",
+  "panti_image": null,
+  "jumlah": 50000,
+  "metode_pembayaran": "Cash",
+  "no_referensi": "REF456",
+  "tanggal": "2023-01-02T00:00:00Z",
+  "tanggal_label": "2 Januari 2023"
+}
+        ''', 201);
+      } else if (url.contains('/api/profiles/panti/')) {
+        return http.Response('''
+[
+  {
+    "id": 1,
+    "username": "panti1",
+    "email": "panti1@example.com",
+    "nama_panti": "Panti Asuhan 1",
+    "alamat_panti": "Jl. Panti 1",
+    "nomor_panti": "111",
+    "profile_picture": null,
+    "description": "Deskripsi 1",
+    "total_terkumpul": 100000,
+    "provinsi": "Jawa Barat",
+    "kabupaten_kota": "Bandung",
+    "kecamatan": "Coblong",
+    "kelurahan": "Dago",
+    "kode_pos": "40135",
+    "lat": -6.2,
+    "lng": 106.8
+  }
+]
+        ''', 200);
+      }
+      return http.Response('Not found', 404);
+    });
+    http.overrideWith(mockClient);
   });
 
-  // ─────────────────────────────────────────────
-  // GROUP: fetchMasyarakatProfile
-  // ─────────────────────────────────────────────
-  group('ProfileApi.fetchMasyarakatProfile', () {
-    const int testUserId = 1;
-
-    final tProfile = SocietyProfileModel(
-      id: testUserId,
-      namaPengguna: 'Budi Santoso',
-      username: 'budi123',
-      email: 'budi@email.com',
-      nomorTelepon: '08123456789',
-      jenisKelamin: 'Laki-laki',
-      alamat: 'Jakarta',
-      profilePicture: null,
-    );
-
-    test('mengembalikan SocietyProfileModel ketika berhasil', () async {
-      when(mockProfileApi.fetchMasyarakatProfile(testUserId))
-          .thenAnswer((_) async => tProfile);
-
-      final result = await mockProfileApi.fetchMasyarakatProfile(testUserId);
-
-      expect(result, isNotNull);
-      expect(result!.id, equals(testUserId));
-      expect(result.namaPengguna, equals('Budi Santoso'));
-      expect(result.email, equals('budi@email.com'));
-      verify(mockProfileApi.fetchMasyarakatProfile(testUserId)).called(1);
-    });
-
-    test('mengembalikan null ketika profil tidak ditemukan', () async {
-      when(mockProfileApi.fetchMasyarakatProfile(testUserId))
-          .thenAnswer((_) async => null);
-
-      final result = await mockProfileApi.fetchMasyarakatProfile(testUserId);
-
-      expect(result, isNull);
-    });
-
-    test('melempar Exception ketika terjadi error jaringan', () async {
-      when(mockProfileApi.fetchMasyarakatProfile(testUserId))
-          .thenThrow(Exception('Network error'));
-
-      expect(
-        mockProfileApi.fetchMasyarakatProfile(testUserId),
-        throwsException,
-      );
-    });
+  tearDown(() {
+    http.overrideWith(null);
   });
 
-  // ─────────────────────────────────────────────
-  // GROUP: fetchAllPanti
-  // ─────────────────────────────────────────────
-  group('ProfileApi.fetchAllPanti', () {
-    final tPantiList = [
-      PantiProfileModel(
-        id: 1,
-        namaPanti: 'Panti Asuhan Harapan',
-        username: 'panti_harapan',
-        email: 'panti_harapan@email.com',
-        nomorPanti: '021-1234567',
-        alamatPanti: 'Jl. Harapan No.1, Jakarta',
-        description: 'Panti terpercaya',
-        profilePicture: 'https://example.com/img1.jpg',
-        totalTerkumpul: 1500000,
-      ),
-      PantiProfileModel(
-        id: 2,
-        namaPanti: 'Panti Kasih Ibu',
-        username: 'panti_kasih',
-        email: 'panti_kasih@email.com',
-        nomorPanti: '021-7654321',
-        alamatPanti: 'Jl. Kasih No.2, Jakarta',
-        description: 'Panti berkualitas',
-        profilePicture: null,
-        totalTerkumpul: 3200000,
-      ),
-    ];
-
-    test('fetchAllPanti: mengembalikan list dengan data panti ketika berhasil',
-        () async {
-      when(mockProfileApi.fetchAllPanti()).thenAnswer((_) async => tPantiList);
-
-      final result = await mockProfileApi.fetchAllPanti();
-
-      expect(result, isNotEmpty);
-      expect(result.length, equals(2));
-      expect(result.first.namaPanti, equals('Panti Asuhan Harapan'));
-      verify(mockProfileApi.fetchAllPanti()).called(1);
+  group('ProfileApi', () {
+    test('fetchMasyarakatProfile returns correct model', () async {
+      final api = ProfileApi();
+      final result = await api.fetchMasyarakatProfile(1);
+      expect(result?.id, 1);
+      expect(result?.username, 'testuser');
+      expect(result?.namaPengguna, 'Test User');
     });
 
-    test('fetchAllPanti: mengembalikan list kosong ketika tidak ada panti',
-        () async {
-      when(mockProfileApi.fetchAllPanti()).thenAnswer((_) async => []);
-
-      final result = await mockProfileApi.fetchAllPanti();
-
-      expect(result, isEmpty);
-    });
-
-    test('fetchAllPanti: melempar Exception ketika server error', () async {
-      when(mockProfileApi.fetchAllPanti())
-          .thenThrow(Exception('Server error 500'));
-
-      expect(
-        mockProfileApi.fetchAllPanti(),
-        throwsException,
-      );
+    test('fetchAllPanti returns list', () async {
+      final api = ProfileApi();
+      final result = await api.fetchAllPanti();
+      expect(result.length, 1);
+      expect(result[0].namaPanti, 'Panti Asuhan 1');
     });
   });
 
-  // ─────────────────────────────────────────────
-  // GROUP: updateMasyarakatProfile
-  // ─────────────────────────────────────────────
-  group('ProfileApi.updateMasyarakatProfile', () {
-    const int profileId = 1;
-
-    final tUpdated = SocietyProfileModel(
-      id: profileId,
-      namaPengguna: 'Budi Updated',
-      username: 'budi_new',
-      email: 'budi@email.com',
-      nomorTelepon: '08199999999',
-      jenisKelamin: 'Laki-laki',
-      alamat: 'Bandung',
-      profilePicture: null,
-    );
-
-    test('mengembalikan profil yang diperbarui ketika berhasil', () async {
-      when(mockProfileApi.updateMasyarakatProfile(
-        profileId,
-        namaPengguna: 'Budi Updated',
-        username: 'budi_new',
-        nomorTelepon: '08199999999',
-        jenisKelamin: 'Laki-laki',
-        alamat: 'Bandung',
-        profilePicture: null,
-        removeProfilePicture: false,
-      )).thenAnswer((_) async => tUpdated);
-
-      final result = await mockProfileApi.updateMasyarakatProfile(
-        profileId,
-        namaPengguna: 'Budi Updated',
-        username: 'budi_new',
-        nomorTelepon: '08199999999',
-        jenisKelamin: 'Laki-laki',
-        alamat: 'Bandung',
-        profilePicture: null,
-        removeProfilePicture: false,
-      );
-
-      expect(result, isNotNull);
-      expect(result.namaPengguna, equals('Budi Updated'));
-      expect(result.username, equals('budi_new'));
+  group('DonationApi', () {
+    test('fetchDonations returns list', () async {
+      final api = DonationApi();
+      final result = await api.fetchDonations(1);
+      expect(result.length, 1);
+      expect(result[0].namaPanti, 'Panti Test');
+      expect(result[0].jumlah, 100000);
     });
 
-    test('mengembalikan null ketika update gagal dari server', () async {
-      when(mockProfileApi.updateMasyarakatProfile(
-        profileId,
-        namaPengguna: 'Test',
-      )).thenAnswer((_) async => null);
-
-      final result = await mockProfileApi.updateMasyarakatProfile(
-        profileId,
-        namaPengguna: 'Test',
+    test('createDonation returns new donation', () async {
+      final api = DonationApi();
+      final result = await api.createDonation(
+        userId: 1,
+        namaPanti: 'New Panti',
+        jumlah: 50000,
+        metodePembayaran: 'Cash',
+        noReferensi: 'REF456',
       );
-
-      expect(result, isNull);
-    });
-
-    test('melempar Exception ketika koneksi gagal', () async {
-      when(mockProfileApi.updateMasyarakatProfile(
-        profileId,
-        namaPengguna: 'Test',
-      )).thenThrow(Exception('Connection timeout'));
-
-      expect(
-        mockProfileApi.updateMasyarakatProfile(
-          profileId,
-          namaPengguna: 'Test',
-        ),
-        throwsException,
-      );
+      expect(result.id, 2);
+      expect(result.jumlah, 50000);
     });
   });
 }
