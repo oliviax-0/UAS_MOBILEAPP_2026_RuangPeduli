@@ -5,9 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti.dart';
 
 void main() {
-  testWidgets('Header widget render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Header widget render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -26,6 +24,6 @@ void main() {
     expect(find.text('Inventaris'), findsOneWidget);
 
     // notif icon tampil
-    expect(find.byIcon(Icons.notifications), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
   });
 }

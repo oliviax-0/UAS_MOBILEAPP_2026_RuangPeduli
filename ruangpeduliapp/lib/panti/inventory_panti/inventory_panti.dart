@@ -17,6 +17,102 @@ const Color kSalmon = Color(0xFFF2C4BC);
 const Color kGreen = Color(0xFF2DB34A);
 const Color kRed = Color(0xFFE53935);
 
+// ─── Shared Widgets ──────────────────────────────────────────────────────────
+
+class HeaderWidget extends StatelessWidget {
+  final String title;
+  final VoidCallback onNotifTap;
+  final int notifCount;
+
+  const HeaderWidget({
+    super.key,
+    required this.title,
+    required this.onNotifTap,
+    this.notifCount = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: kPink.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: Icon(Icons.inventory_2_rounded, color: kPink, size: 22),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1A1A1A),
+                letterSpacing: -0.5,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: onNotifTap,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.notifications_rounded,
+                      color: Color(0xFF1A1A1A), size: 20),
+                ),
+                if (notifCount > 0)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      constraints:
+                          const BoxConstraints(minWidth: 16, minHeight: 16),
+                      decoration: const BoxDecoration(
+                          color: kRed, shape: BoxShape.circle),
+                      child: Text(
+                        notifCount > 99 ? '99+' : '$notifCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 class InventarisPanti extends StatefulWidget {
@@ -31,7 +127,7 @@ class InventarisPanti extends StatefulWidget {
 class _InventarisPantiState extends State<InventarisPanti> {
   int? _pegawaiCount;
   int? _penghuniCount;
-  int  _lowStockCount = 0;
+  int _lowStockCount = 0;
   Timer? _countsTimer;
 
   @override
@@ -70,7 +166,8 @@ class _InventarisPantiState extends State<InventarisPanti> {
   Future<void> _checkLowStock() async {
     if (widget.pantiId == null) return;
     try {
-      final items = await InventoryNotificationService.checkAndNotify(widget.pantiId!);
+      final items =
+          await InventoryNotificationService.checkAndNotify(widget.pantiId!);
       if (mounted) setState(() => _lowStockCount = items.length);
     } catch (_) {}
   }
@@ -101,88 +198,18 @@ class _InventarisPantiState extends State<InventarisPanti> {
   // ─── Header ──────────────────────────────────────────────────────────────
 
   Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-      child: Row(
-        children: [
-          // 3D box icon
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: kPink.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Center(
-              child: Icon(Icons.inventory_2_rounded, color: kPink, size: 22),
-            ),
-          ),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              'Inventaris',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A1A),
-                letterSpacing: -0.5,
-              ),
-            ),
-          ),
-          // Bell with dynamic badge
-          GestureDetector(
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => InventarisNotifikasiScreen(pantiId: widget.pantiId)),
-              );
-              // Refresh count when returning from the notification screen
-              _checkLowStock();
-            },
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.notifications_rounded, color: Color(0xFF1A1A1A), size: 20),
-                ),
-                if (_lowStockCount > 0)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                      decoration: const BoxDecoration(color: kRed, shape: BoxShape.circle),
-                      child: Text(
-                        _lowStockCount > 99 ? '99+' : '$_lowStockCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return HeaderWidget(
+      title: 'Inventaris',
+      notifCount: _lowStockCount,
+      onNotifTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) =>
+                  InventarisNotifikasiScreen(pantiId: widget.pantiId)),
+        );
+        _checkLowStock();
+      },
     );
   }
 
@@ -223,7 +250,9 @@ class _InventarisPantiState extends State<InventarisPanti> {
                   icon: _BoxArrowIcon(arrowColor: kGreen, arrowUp: true),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => StokMasukScreen(userId: widget.userId, pantiId: widget.pantiId)),
+                    MaterialPageRoute(
+                        builder: (_) => StokMasukScreen(
+                            userId: widget.userId, pantiId: widget.pantiId)),
                   ),
                 ),
               ),
@@ -234,7 +263,9 @@ class _InventarisPantiState extends State<InventarisPanti> {
                   icon: _BoxArrowIcon(arrowColor: kRed, arrowUp: false),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => StokKeluarScreen(userId: widget.userId, pantiId: widget.pantiId)),
+                    MaterialPageRoute(
+                        builder: (_) => StokKeluarScreen(
+                            userId: widget.userId, pantiId: widget.pantiId)),
                   ),
                 ),
               ),
@@ -244,7 +275,8 @@ class _InventarisPantiState extends State<InventarisPanti> {
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
-              onTap: () => showStokOpsiDialog(context, pantiId: widget.pantiId, userId: widget.userId),
+              onTap: () => showStokOpsiDialog(context,
+                  pantiId: widget.pantiId, userId: widget.userId),
               child: Container(
                 width: 44,
                 height: 44,
@@ -308,7 +340,8 @@ class _InventarisPantiState extends State<InventarisPanti> {
                       children: [
                         const Text(
                           'Pegawai ',
-                          style: TextStyle(fontSize: 14, color: Color(0xFF5A2828)),
+                          style:
+                              TextStyle(fontSize: 14, color: Color(0xFF5A2828)),
                         ),
                         Text(
                           _pegawaiCount?.toString() ?? '—',
@@ -333,7 +366,8 @@ class _InventarisPantiState extends State<InventarisPanti> {
                       children: [
                         const Text(
                           'Penghuni ',
-                          style: TextStyle(fontSize: 14, color: Color(0xFF5A2828)),
+                          style:
+                              TextStyle(fontSize: 14, color: Color(0xFF5A2828)),
                         ),
                         Text(
                           _penghuniCount?.toString() ?? '—',
@@ -358,10 +392,13 @@ class _InventarisPantiState extends State<InventarisPanti> {
               Expanded(
                 child: _SquareCard(
                   label: 'Pegawai',
-                  icon: const Icon(Icons.work_rounded, size: 42, color: Color(0xFF1A1A1A)),
+                  icon: const Icon(Icons.work_rounded,
+                      size: 42, color: Color(0xFF1A1A1A)),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => DaftarPegawaiScreen(userId: widget.userId)),
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            DaftarPegawaiScreen(userId: widget.userId)),
                   ),
                 ),
               ),
@@ -369,10 +406,13 @@ class _InventarisPantiState extends State<InventarisPanti> {
               Expanded(
                 child: _SquareCard(
                   label: 'Penghuni',
-                  icon: const Icon(Icons.groups_rounded, size: 42, color: Color(0xFF1A1A1A)),
+                  icon: const Icon(Icons.groups_rounded,
+                      size: 42, color: Color(0xFF1A1A1A)),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => DaftarPenghuniScreen(userId: widget.userId)),
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            DaftarPenghuniScreen(userId: widget.userId)),
                   ),
                 ),
               ),
@@ -382,7 +422,6 @@ class _InventarisPantiState extends State<InventarisPanti> {
       ),
     );
   }
-
 }
 
 // ─── Square Card ─────────────────────────────────────────────────────────────
@@ -466,7 +505,9 @@ class _BoxArrowIcon extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                arrowUp ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                arrowUp
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded,
                 size: 20,
                 color: arrowColor,
               ),

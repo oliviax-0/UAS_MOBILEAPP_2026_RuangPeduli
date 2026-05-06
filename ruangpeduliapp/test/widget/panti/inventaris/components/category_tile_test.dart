@@ -5,9 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_stokmasuk.dart';
 
 void main() {
-  testWidgets('Category tile render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Category tile render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -27,6 +25,6 @@ void main() {
     expect(find.text('Makanan'), findsOneWidget);
 
     // jumlah tampil
-    expect(find.textContaining('10'), findsOneWidget);
+    expect(find.text('10 Jenis'), findsOneWidget);
   });
 }

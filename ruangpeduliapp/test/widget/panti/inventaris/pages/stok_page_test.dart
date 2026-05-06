@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ruangpeduliapp/panti/inventaris/inventory_panti_stokmasuk.dart';
+import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_stokmasuk.dart';
 
 void main() {
   testWidgets('StokPage render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: InventoryPantiStokMasukPage(),
+        home: StokMasukScreen(),
       ),
     );
 
-    expect(find.byType(InventoryPantiStokMasukPage), findsOneWidget);
+    expect(find.byType(StokMasukScreen), findsOneWidget);
     expect(find.byType(Scaffold), findsOneWidget);
 
     // kondisi: loading / list / empty

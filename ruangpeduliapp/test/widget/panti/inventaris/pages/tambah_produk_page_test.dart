@@ -5,12 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_produkbaru.dart';
 
 void main() {
-  testWidgets('Tambah produk page render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Tambah produk page render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: InventoryPantiProdukBaru(),
+        home: TambahProdukScreen(pantiId: 1, userId: 1),
       ),
     );
 
@@ -21,7 +19,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // page tampil
-    expect(find.byType(InventoryPantiProdukBaru), findsOneWidget);
+    expect(find.byType(TambahProdukScreen), findsOneWidget);
 
     // scaffold tampil
     expect(find.byType(Scaffold), findsOneWidget);
