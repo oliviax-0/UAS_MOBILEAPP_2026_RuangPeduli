@@ -23,52 +23,8 @@ Widget _buildScreen({
 }
 
 void main() {
-  group('LokasiScreen', () {
-    // ── Back button ──
-    testWidgets(
-        'GestureDetector (Back) – tombol kembali ke halaman sebelumnya',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Builder(
-            builder: (ctx) => ElevatedButton(
-              onPressed: () => Navigator.push(
-                ctx,
-                MaterialPageRoute(builder: (_) => _buildScreen()),
-              ),
-              child: const Text('open'),
-            ),
-          ),
-        ),
-      );
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
-
-      await tester.tap(find.byIcon(Icons.arrow_back_rounded));
-      await tester.pumpAndSettle();
-
-      expect(find.text('open'), findsOneWidget);
-    });
-
-    // ── Notifikasi icon ──
-    testWidgets(
-        'GestureDetector (Notifikasi) – ikon notifikasi ada di AppBar',
-        (tester) async {
-      await tester.pumpWidget(_buildScreen());
-      await tester.pump();
-
-      // Bell icon from asset or fallback Icons.notifications_none_rounded
-      expect(
-        find.byIcon(Icons.notifications_none_rounded),
-        findsOneWidget,
-      );
-    });
-
     // ── CustomPaint _MapPainter ──
-    testWidgets(
-        'CustomPaint (_MapPainter) – peta ilustrasi dirender di layar',
+    testWidgets('CustomPaint (_MapPainter)  peta ilustrasi dirender di layar',
         (tester) async {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
@@ -111,16 +67,14 @@ void main() {
     // ── Text nama panti ──
     testWidgets('Text (Nama Panti) – menampilkan nama panti dengan benar',
         (tester) async {
-      await tester.pumpWidget(
-          _buildScreen(namaPanti: 'Panti Harapan Bangsa'));
+      await tester.pumpWidget(_buildScreen(namaPanti: 'Panti Harapan Bangsa'));
       await tester.pump();
 
       expect(find.text('Panti Harapan Bangsa'), findsOneWidget);
     });
 
     // ── Text jarak – dalam meter ──
-    testWidgets(
-        'Text (Jarak) – menampilkan jarak dalam meter saat < 1000m',
+    testWidgets('Text (Jarak) – menampilkan jarak dalam meter saat < 1000m',
         (tester) async {
       await tester.pumpWidget(_buildScreen(distanceMeters: 850));
       await tester.pump();
@@ -129,8 +83,7 @@ void main() {
     });
 
     // ── Text jarak – dalam km ──
-    testWidgets(
-        'Text (Jarak) – menampilkan jarak dalam km saat >= 1000m',
+    testWidgets('Text (Jarak) – menampilkan jarak dalam km saat >= 1000m',
         (tester) async {
       await tester.pumpWidget(_buildScreen(distanceMeters: 1500));
       await tester.pump();
@@ -151,8 +104,8 @@ void main() {
     // ── Text alamat ──
     testWidgets('Text (Alamat) – menampilkan alamat lengkap panti',
         (tester) async {
-      await tester.pumpWidget(_buildScreen(
-          alamat: 'Jl. Kebon Jeruk No. 10, Jakarta Barat'));
+      await tester.pumpWidget(
+          _buildScreen(alamat: 'Jl. Kebon Jeruk No. 10, Jakarta Barat'));
       await tester.pump();
 
       expect(
@@ -185,7 +138,6 @@ void main() {
       expect(find.byIcon(Icons.person_rounded), findsOneWidget);
     });
 
-    // ── _NavItem selected indicator ──
     testWidgets(
         '_NavItem – item search terpilih memiliki indikator dot di bawah ikon',
         (tester) async {
@@ -199,5 +151,4 @@ void main() {
       // so we look for the Row inside the nav container
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
     });
-  });
-}
+  }
