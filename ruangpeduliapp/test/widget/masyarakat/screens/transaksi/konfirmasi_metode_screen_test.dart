@@ -209,7 +209,7 @@ void main() {
       await tester.tap(find.text('Konfirmasi'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Gagal menyimpan donasi, coba lagi'), findsOneWidget);
+      expect(find.text('Gagal menyimpan donasi, coba lagi!'), findsOneWidget);
     });
   });
 }
