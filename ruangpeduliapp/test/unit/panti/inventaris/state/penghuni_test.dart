@@ -4,45 +4,45 @@ import 'package:ruangpeduliapp/panti/inventaris/models/anggota_model.dart';
 
 /// Fake API
 class FakeResidentsApi {
-  Future<List<AnggotaModel>> getPenghuni() async {
+  Future<List<AnggotaModel>> getPegawai() async {
     return [
       AnggotaModel(
         id: 1,
         nama: 'Andi',
-        divisi: 'Penghuni',
+        divisi: 'Pegawai',
         telepon: '08111111111',
       ),
     ];
   }
 
-  Future<bool> addPenghuni(AnggotaModel anggota) async {
+  Future<bool> addPegawai(AnggotaModel anggota) async {
     return true;
   }
 
-  Future<bool> deletePenghuni(int id) async {
+  Future<bool> deletePegawai(int id) async {
     return true;
   }
 }
 
 /// Error API
 class ErrorResidentsApi {
-  Future<List<AnggotaModel>> getPenghuni() async {
+  Future<List<AnggotaModel>> getPegawai() async {
     throw Exception('Error');
   }
 
-  Future<bool> addPenghuni(AnggotaModel anggota) async {
+  Future<bool> addPegawai(AnggotaModel anggota) async {
     throw Exception('Error');
   }
 
-  Future<bool> deletePenghuni(int id) async {
+  Future<bool> deletePegawai(int id) async {
     throw Exception('Error');
   }
 }
 
 void main() {
-  group('PenghuniState Test', () {
+  group('ResidentsState Test', () {
 
-    test('loadPenghuni success', () async {
+    test('loadPegawai success', () async {
       final state = ResidentsState(api: FakeResidentsApi());
 
       await state.loadPegawai();
@@ -52,7 +52,7 @@ void main() {
       expect(state.isLoading, false);
     });
 
-    test('loadPenghuni error', () async {
+    test('loadPegawai error', () async {
       final state = ResidentsState(api: ErrorResidentsApi());
 
       await state.loadPegawai();
@@ -62,13 +62,13 @@ void main() {
       expect(state.isLoading, false);
     });
 
-    test('addPenghuni success', () async {
+    test('addPegawai success', () async {
       final state = ResidentsState(api: FakeResidentsApi());
 
       final anggota = AnggotaModel(
         id: 1,
         nama: 'Andi',
-        divisi: 'Penghuni',
+        divisi: 'Pegawai',
         telepon: '08111111111',
       );
 
@@ -77,7 +77,7 @@ void main() {
       expect(result, true);
     });
 
-    test('deletePenghuni success', () async {
+    test('deletePegawai success', () async {
       final state = ResidentsState(api: FakeResidentsApi());
 
       final result = await state.deletePegawai(1);
