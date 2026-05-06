@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-// ✅ sesuaikan dengan file asli kamu
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti.dart';
 
 void main() {
-  testWidgets('Notif badge render test',
-      (WidgetTester tester) async {
-
+  testWidgets('Notif badge render test', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -25,6 +21,6 @@ void main() {
     expect(find.text('3'), findsOneWidget);
 
     // icon notif tampil
-    expect(find.byIcon(Icons.notifications), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
   });
 }
