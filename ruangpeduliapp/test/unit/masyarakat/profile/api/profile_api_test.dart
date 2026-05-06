@@ -2,9 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ruangpeduliapp/data/profile_api.dart';
-import 'package:ruangpeduliapp/data/data.dart';
+import '../../../../widget/masyarakat/screens/search/search_screen_test.mocks.dart';
+import 'profile_api_test.dart';
 
-import 'profile_api_test.mocks.dart';
+
 
 @GenerateMocks([ProfileApi])
 void main() {
@@ -73,6 +74,7 @@ void main() {
         id: 1,
         namaPanti: 'Panti Asuhan Harapan',
         username: 'panti_harapan',
+        email: 'panti_harapan@email.com',
         nomorPanti: '021-1234567',
         alamatPanti: 'Jl. Harapan No.1, Jakarta',
         description: 'Panti terpercaya',
@@ -83,6 +85,7 @@ void main() {
         id: 2,
         namaPanti: 'Panti Kasih Ibu',
         username: 'panti_kasih',
+        email: 'panti_kasih@email.com',
         nomorPanti: '021-7654321',
         alamatPanti: 'Jl. Kasih No.2, Jakarta',
         description: 'Panti berkualitas',
@@ -91,9 +94,9 @@ void main() {
       ),
     ];
 
-    test('fetchAllPanti: mengembalikan list dengan data panti ketika berhasil', () async {
-      when(mockProfileApi.fetchAllPanti())
-          .thenAnswer((_) async => tPantiList);
+    test('fetchAllPanti: mengembalikan list dengan data panti ketika berhasil',
+        () async {
+      when(mockProfileApi.fetchAllPanti()).thenAnswer((_) async => tPantiList);
 
       final result = await mockProfileApi.fetchAllPanti();
 
@@ -103,7 +106,8 @@ void main() {
       verify(mockProfileApi.fetchAllPanti()).called(1);
     });
 
-    test('fetchAllPanti: mengembalikan list kosong ketika tidak ada panti', () async {
+    test('fetchAllPanti: mengembalikan list kosong ketika tidak ada panti',
+        () async {
       when(mockProfileApi.fetchAllPanti()).thenAnswer((_) async => []);
 
       final result = await mockProfileApi.fetchAllPanti();

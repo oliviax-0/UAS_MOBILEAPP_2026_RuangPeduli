@@ -1,5 +1,7 @@
 /// Mock data untuk testing fitur Masyarakat
 
+// ignore_for_file: dangling_library_doc_comments
+
 /// Mock Panti data
 const mockPantiList = [
   {

@@ -117,30 +117,34 @@ class _StokDetailScreenState extends State<StokDetailScreen> {
 
   Future<void> _fetchCategories() async {
     if (widget.pantiId == null) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
       return;
     }
-    if (mounted)
+    if (mounted) {
       setState(() {
         _loading = true;
         _error = null;
       });
+    }
     try {
       final cats = await InventoryApi().fetchCategories(widget.pantiId!);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _categories = cats;
           _loading = false;
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _error = e.toString();
           _loading = false;
         });
+      }
     }
   }
 
@@ -412,24 +416,27 @@ class _StokDetailKategoriScreenState extends State<StokDetailKategoriScreen> {
   }
 
   Future<void> _fetchItems() async {
-    if (mounted)
+    if (mounted) {
       setState(() {
         _loading = true;
         _error = null;
       });
+    }
     try {
       final items = await InventoryApi().fetchItems(widget.categoryId);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _items = items;
           _loading = false;
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _error = e.toString();
           _loading = false;
         });
+      }
     }
   }
 

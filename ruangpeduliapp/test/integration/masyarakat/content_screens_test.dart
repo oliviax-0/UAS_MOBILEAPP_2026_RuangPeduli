@@ -3,6 +3,8 @@
 // Tests for content-related screens:
 // BeritaDetailScreen, KebutuhanScreen, VideoPlayerScreen
 
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
