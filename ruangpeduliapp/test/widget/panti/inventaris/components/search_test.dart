@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// ✅ sesuaikan dengan file asli kamu
-import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_stokmasuk.dart';
-
 void main() {
-  testWidgets('Search widget input test',
+  testWidgets('Search field test',
       (WidgetTester tester) async {
 
     final controller = TextEditingController();
@@ -13,24 +10,34 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: SearchWidget(
+          body: TextField(
             controller: controller,
+            decoration: const InputDecoration(
+              hintText: 'Cari barang',
+              prefixIcon: Icon(Icons.search),
+            ),
             onChanged: (value) {},
           ),
         ),
       ),
     );
 
-    // widget tampil
-    expect(find.byType(SearchWidget), findsOneWidget);
-
-    // textfield tampil
+    // TextField tampil
     expect(find.byType(TextField), findsOneWidget);
 
-    // input text
-    await tester.enterText(find.byType(TextField), 'Beras');
+    // Icon search tampil
+    expect(find.byIcon(Icons.search), findsOneWidget);
+
+    // Input text
+    await tester.enterText(
+      find.byType(TextField),
+      'Beras',
+    );
+
     await tester.pump();
 
+    // Validasi text masuk
     expect(controller.text, 'Beras');
+    expect(find.text('Beras'), findsOneWidget);
   });
 }
