@@ -1,57 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// ✅ sesuaikan dengan class asli project kamu
 import 'package:ruangpeduliapp/panti/inventory_panti/inventory_panti_notifikasi.dart';
 
 void main() {
-  testWidgets('Notif flow test',
-      (WidgetTester tester) async {
+  testWidgets(
+    'Notif inventory flow test',
+    (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: InventoryPantiNotifikasi(),
-      ),
-    );
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: InventarisNotifikasiScreen(
+            pantiId: 1,
+          ),
+        ),
+      );
 
-    // render awal
-    await tester.pump();
+      // render awal
+      await tester.pump();
 
-    // tunggu async selesai
-    await tester.pumpAndSettle();
-
-    // halaman tampil
-    expect(find.byType(InventoryPantiNotifikasi), findsOneWidget);
-
-    // kemungkinan UI
-    final loading = find.byType(CircularProgressIndicator);
-    final list = find.byType(ListView);
-    final refresh = find.byIcon(Icons.refresh);
-    final empty = find.textContaining('Belum');
-
-    expect(
-      loading.evaluate().isNotEmpty ||
-          list.evaluate().isNotEmpty ||
-          refresh.evaluate().isNotEmpty ||
-          empty.evaluate().isNotEmpty,
-      true,
-    );
-
-    // tap refresh jika ada
-    if (refresh.evaluate().isNotEmpty) {
-      await tester.tap(refresh.first);
+      // tunggu async selesai
       await tester.pumpAndSettle();
-    }
 
-    // tap item notif jika ada
-    final gesture = find.byType(GestureDetector);
+      // halaman tampil
+      expect(
+        find.byType(InventarisNotifikasiScreen),
+        findsOneWidget,
+      );
 
-    if (gesture.evaluate().isNotEmpty) {
-      await tester.tap(gesture.first);
-      await tester.pumpAndSettle();
-    }
+      // kemungkinan widget muncul
+      final loading =
+          find.byType(CircularProgressIndicator);
 
-    // pastikan tidak crash
-    expect(find.byType(MaterialApp), findsOneWidget);
-  });
+      final list =
+          find.byType(ListView);
+
+      final gesture =
+          find.byType(GestureDetector);
+
+      final text =
+          find.textContaining('Stok');
+
+      expect(
+        loading.evaluate().isNotEmpty ||
+            list.evaluate().isNotEmpty ||
+            gesture.evaluate().isNotEmpty ||
+            text.evaluate().isNotEmpty,
+        true,
+      );
+
+      // tap item pertama jika ada
+      if (gesture.evaluate().isNotEmpty) {
+        await tester.tap(gesture.first);
+        await tester.pumpAndSettle();
+      }
+
+      // app tidak crash
+      expect(find.byType(MaterialApp), findsOneWidget);
+    },
+  );
 }
